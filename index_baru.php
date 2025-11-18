@@ -46,7 +46,7 @@
           Yuk jelajahi dunia kue bersama kami! Temukan berbagai artikel menarik, resep kue lezat,
           dan bergabung dengan komunitas pecinta kue yang penuh semangat.
         </p>
-        <a href="#artikel" class="btn-hero">Jelajahi Sekarang</a>
+        <a href="#berita" class="btn-hero">Jelajahi Sekarang</a>
       </div>
       <div class="hero-image">
         <img src="element1.png" alt="Kue Ceria">
@@ -55,44 +55,66 @@
   </section>
 
   <!-- ================= BERITA TERKINI ================= -->
-  <section id="berita" class="carousel-section">
-    <div class="featured-title">
-      <h2>Berita Terkini Dunia Kue</h2>
-    </div>
-    <div class="carousel-container">
-      <div class="carousel-slide">
-        <img src="festivalkue.jpeg" alt="Berita 1">
-        <div class="carousel-caption">
-          <h3>Festival Kue Nusantara 2025 Resmi Dibuka!</h3>
-          <p>Berbagai jenis kue tradisional dari seluruh Indonesia dipamerkan di Jakarta Culinary Expo.</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
-        </div>
-      </div>
-      <div class="carousel-slide">
-        <img src="dessertasia.jpeg" alt="Berita 2">
-        <div class="carousel-caption">
-          <h3>Chef Lokal Menangkan Kompetisi Dessert Asia</h3>
-          <p>Kreasi kue klepon modern berhasil membawa Chef Ayu meraih juara pertama di Bangkok.</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
-        </div>
-      </div>
-      <div class="carousel-slide">
-        <img src="pastelcake.jpeg" alt="Berita 3">
-        <div class="carousel-caption">
-          <h3>Tren Warna Pastel Dominasi Dekorasi Kue 2025</h3>
-          <p>Warna-warna lembut seperti peach dan mint jadi favorit para baker muda.</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
-        </div>
-      </div>
+<section id="berita" class="carousel-section">
+  <div class="featured-title">
+    <h2>Berita Terkini Dunia Kue</h2>
+  </div>
 
-      <!-- Tombol navigasi -->
-      <button class="carousel-btn prev">&#10094;</button>
-      <button class="carousel-btn next">&#10095;</button>
+  <div class="carousel-container">
+
+    <!-- SLIDE 1 -->
+    <div class="carousel-slide active">
+      <div class="carousel-media">
+        <img src="festivalkue.jpeg" alt="Berita 1">
+      </div>
+      <div class="carousel-caption">
+        <h3>Festival Kue Nusantara 2025 Resmi Dibuka!</h3>
+        <p>Berbagai jenis kue tradisional dari seluruh Indonesia dipamerkan di Jakarta Culinary Expo.</p>
+        <a href="beritaTerkini/berita-festival.php" class="btn-hero">Baca Selengkapnya</a>
+      </div>
     </div>
-  </section>
+
+    <!-- SLIDE 2 -->
+    <div class="carousel-slide">
+      <div class="carousel-media">
+        <img src="dessertasia.jpeg" alt="Berita 2">
+      </div>
+      <div class="carousel-caption">
+        <h3>Chef Lokal Menangkan Kompetisi Dessert Asia</h3>
+        <p>Kreasi kue klepon modern berhasil membawa Chef Ayu meraih juara pertama di Bangkok.</p>
+        <a href="beritaTerkini/berita-chef.php" class="btn-hero">Baca Selengkapnya</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="carousel-slide">
+      <div class="carousel-media">
+        <img src="pastelcake.jpeg" alt="Berita 3">
+      </div>
+      <div class="carousel-caption">
+        <h3>Tren Warna Pastel Dominasi Dekorasi Kue 2025</h3>
+        <p>Warna-warna lembut seperti peach dan mint jadi favorit para baker muda.</p>
+        <a href="beritaTerkini/berita-tren-pastel.php" class="btn-hero">Baca Selengkapnya</a>
+      </div>
+    </div>
+
+    <!-- TOMBOL -->
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
+</section>
+
 
   <!-- ================= ARTIKEL ================= -->
-  <section id="artikel" class="menu-section">
+  <section id="artikel" 
+  style="position: relative;
+  width: 100%;
+  margin-top: -10px;
+  padding-top: 100px;
+  padding-bottom: 150px; 
+  background: #fff9b4 url('bgArtikel.png') no-repeat center top / 100% auto;
+  overflow: visible;">
+  <div class="menu-section artikel-section">
     <div class="featured-title"><h2>Artikel Kuliner Terbaru</h2></div>
     <div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px;">
       <div class="menu-card">
@@ -100,7 +122,7 @@
         <div class="card-body">
           <h5>Sejarah Kue Nastar yang Legendaris</h5>
           <p>Kue kecil berisi nanas ini punya cerita panjang dari masa kolonial hingga jadi favorit Lebaran.</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
+          <a href="artikel/artikel-nastar.php" class="btn-hero">Baca Selengkapnya</a>
         </div>
       </div>
       <div class="menu-card">
@@ -108,7 +130,7 @@
         <div class="card-body">
           <h5>Rahasia Tekstur Kue Lembut dan Mengembang</h5>
           <p>Simak tips penting agar adonanmu selalu mengembang sempurna dan hasilnya lembut menggoda!</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
+          <a href="artikel/artikel-softcake.php" class="btn-hero">Baca Selengkapnya</a>
         </div>
       </div>
       <div class="menu-card">
@@ -116,14 +138,23 @@
         <div class="card-body">
           <h5>Inspirasi Dekorasi Cupcake untuk Pemula</h5>
           <p>Buat cupcake-mu jadi karya seni kecil yang lucu dan cantik dengan bahan sederhana.</p>
-          <a href="#" class="btn-hero">Baca Selengkapnya</a>
+          <a href="artikel/artikel-cupcake.php" class="btn-hero">Baca Selengkapnya</a>
         </div>
       </div>
     </div>
+  </div>
   </section>
 
   <!-- ================= RESEP ================= -->
-  <section id="resep" class="menu-section">
+  <section id="resep" 
+  style="position: relative;
+  width: 100%;
+  margin-top: -10px;
+  padding-top: 100px;
+  padding-bottom: 150px; 
+  background: #fff9b4 url('bgResep.png') no-repeat center top / 100% auto;
+  overflow: visible;">
+  <div class="menu-section resep-section">
     <div class="featured-title"><h2>Resep Kue Populer</h2></div>
     <div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;">
       <div class="menu-card">
@@ -157,11 +188,20 @@
         </div>
       </div>
     </div>
+  </div>
   </section>
 
   <!-- ================= KOMUNITAS ================= -->
-  <section id="komunitas" class="menu-section">
-    <div class="featured-title"><h2>Komunitas Pecinta Kue</h2></div>
+  <section id="komunitas" 
+  style="position: relative;
+  width: 100%;
+  margin-top: -130px;
+  padding-top: 100px;
+  padding-bottom: 200px; 
+  background: #fff9b4 url('bgMenu.png') no-repeat center top / 100% auto;
+  overflow: visible;">
+  <div class="menu-section komunitas-section">
+ <div class="featured-title"><h2>Komunitas Pecinta Kue</h2></div>
     <div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;">
       <div class="menu-card">
         <img src="browniespandan.jpg" alt="User 1">
@@ -188,6 +228,7 @@
     <div style="text-align:center; margin-top:30px;">
       <a href="#" class="btn-hero">Lihat Semua Postingan</a>
     </div>
+  </div> 
   </section>
 
   <!-- ================= LOGIN / REGISTER MODAL ================= -->

@@ -234,12 +234,12 @@ body {
 .menu-section {
   max-width: 1100px;
   margin: auto;
-  padding: 20px;    
+  padding: 20px;
 }
 
 .bgArtikel {
- background: #fff9b4 url("bgMenu.png") no-repeat center bottom / 100% auto;
- background-size: cover;
+  background: #fff9b4 url("bgMenu.png") no-repeat center bottom / 100% auto;
+  background-size: cover;
 }
 
 .menu-card {
@@ -305,120 +305,148 @@ footer .social-icons a:hover {
 }
 
 /* =========================================================
-   CAROUSEL BERITA TERKINI
+   CAROUSEL BERITA TERKINI (VERSI LIKE SCREENSHOT)
 ========================================================= */
+
 .carousel-section {
-  position: relative;
   width: 100%;
-  margin-top: 80px;
-  padding-top: 20px;
-  padding-bottom: 260px; /* tambahin tinggi di bawah biar lengkungan pink kelihatan semua */
-  background: #fff9b4 url("background.png") no-repeat center bottom / 100% auto; /* FULL LEBAR, PROPORSI ASLI, NEMPEL DI BAWAH */
+ margin-top: 80px; 
+ padding-top: 100px; 
+ padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff9b4 url("background.png") no-repeat center bottom / 100% auto; 
   overflow: visible;
 }
 
+/* --- CARD UTAMA --- */
 .carousel-container {
-  position: relative;
-  width: 90%;
-  margin: auto;
+  width: 96%;
+  max-width: 1200px;             /* sesuai screenshot */
+  max-height: 900px;
+  margin: 0 auto;
   overflow: hidden;
-  border-radius: 25px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  min-height: 480px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 30px;           /* rounded besar */
+  position: relative;
+  background: #000;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
 }
 
+/* --- SLIDE --- */
 .carousel-slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  visibility: hidden;
   display: none;
-  position: relative;
-  width: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transition: opacity 0.6s ease-in-out;
 }
 
 .carousel-slide.active {
-  position: relative;
-  visibility: visible;
   display: block;
   opacity: 1;
 }
 
-.carousel-slide img {
+/* --- GAMBAR --- */
+.carousel-media img {
   width: 100%;
-  height: 450px;
-  object-fit: cover;
-  border-radius: 25px;
+  height: 550px;                /* tinggi sama seperti screenshot */
+  object-fit: cover;            /* biar rapi */
+  display: block;
 }
 
+/* --- CAPTION KOTAK PUTIH --- */
 .carousel-caption {
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   left: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px 30px;
-  border-radius: 20px;
-  max-width: 500px;
-  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 35px 35px;
+  border-radius: 25px;
+  max-width: 560px;             /* lebar pas seperti di screenshot */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.18);
+  margin-left: 50px;
 }
 
 .carousel-caption h3 {
   font-family: "Caprasimo", cursive;
-  font-size: 1.6rem;
+  font-size: 1.9rem;
+  line-height: 1.2;
   color: #8e1913;
+  margin-bottom: 12px;
 }
 
 .carousel-caption p {
-  font-size: 1rem;
   color: #4b2e05;
-  text-align: justify;
+  font-size: 1rem;
+  margin-bottom: 16px;
 }
 
+/* --- BUTTON NEXT / PREV --- */
 .carousel-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.7);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   border: none;
+  background: rgba(255,255,255,0.95);
   color: #8e1913;
   font-size: 2rem;
   cursor: pointer;
-  padding: 10px 18px;
-  border-radius: 50%;
-  transition: 0.3s;
-  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: 0.25s;
+  z-index: 10;
 }
 
 .carousel-btn:hover {
   background: #fff9b4;
+  transform: translateY(-50%) scale(1.05);
 }
 
 .prev {
   left: 20px;
 }
+
 .next {
   right: 20px;
 }
 
-@keyframes fade {
-  from {
-    opacity: 0.3;
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .carousel-container {
+    width: 95%;
+    border-radius: 25px;
   }
-  to {
-    opacity: 1;
+  .carousel-media img {
+    height: 260px;
+  }
+  .carousel-caption {
+    left: 20px;
+    bottom: 20px;
+    padding: 18px 20px;
+    max-width: calc(100% - 40px);
+  }
+  .carousel-caption h3 {
+    font-size: 1.4rem;
+  }
+  .carousel-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.6rem;
   }
 }
+
+
 
 /* =========================================================
    FEATURED TITLE
 ========================================================= */
 .featured-title {
   background-image: url("backgroundTitle.png");
-  background-size: 20%;
+  background-size: 260px auto;   /* ⬅ ganti dari 20% ke px */
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
@@ -428,6 +456,7 @@ footer .social-icons a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;                   /* ⬅ penting, biar lebarnya full */
 }
 
 .featured-title h2 {
