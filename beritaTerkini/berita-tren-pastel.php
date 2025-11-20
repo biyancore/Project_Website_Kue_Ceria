@@ -60,7 +60,7 @@
     </div>
 
     <div class="article-back">
-      <a href="../index_baru.php">← Kembali ke Artikel</a>
+      <a href="../index_baru.php#berita">← Kembali ke Artikel</a>
     </div>
   </div>
 

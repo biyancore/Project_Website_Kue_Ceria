@@ -123,8 +123,10 @@ body {
   min-height: 100vh;
   padding: 40px 80px;
   margin: 100px 0 50px;
-  background: url("bgcafe.jpg") center/cover no-repeat;
+  background: url("image/bgcafe.jpg") center/cover no-repeat;
   z-index: 0;
+  margin-top: 100px;
+  padding-top : 95px;
 }
 
 #hero::after {
@@ -238,7 +240,7 @@ body {
 }
 
 .bgArtikel {
-  background: #fff9b4 url("bgMenu.png") no-repeat center bottom / 100% auto;
+  background: #fff9b4 url("image/bgMenu.png") no-repeat center bottom / 100% auto;
   background-size: cover;
 }
 
@@ -282,6 +284,89 @@ body {
   font-weight: 700;
 }
 
+/* ===== KOMUNITAS (CARD STYLE) ===== */
+
+.komunitas-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: -80px;
+}
+
+/* Grid responsif 2–4 kolom seperti contoh gambar */
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+/* Card komunitas */
+.community-card {
+  background: #fffdf8;
+  border-radius: 22px;
+  padding: 10px 10px 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.community-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+}
+
+/* Gambar di atas card */
+.community-img {
+  width: 100%;
+  height: 150px;
+  border-radius: 18px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Isi card */
+.community-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.community-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.community-user {
+  font-size: 0.8rem;
+  color: #8e1913;
+  margin: 0;
+}
+
+.community-caption {
+  font-size: 0.8rem;
+  color: #555;
+  margin: 4px 0 2px;
+}
+
+.community-meta {
+  font-size: 0.75rem;
+  color: #a0a0a0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+/* Tombol di card komunitas */
+.community-btn {
+  font-size: 0.8rem;
+  padding: 8px 14px;
+  width: 100%;
+}
+
+
 /* =========================================================
    FOOTER
 ========================================================= */
@@ -291,6 +376,8 @@ footer {
   font-size: 16px;
   color: #fff;
   background: linear-gradient(180deg, #fff9b4, #d79f90);
+  position: fixed bottom;
+  padding-bottom:-10px;
 }
 
 footer .social-icons a {
@@ -310,24 +397,24 @@ footer .social-icons a:hover {
 
 .carousel-section {
   width: 100%;
- margin-top: 80px; 
- padding-top: 100px; 
- padding-bottom: 20px;
+  margin-top: 50px;
+  padding-top: 60px;
+  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff9b4 url("background.png") no-repeat center bottom / 100% auto; 
+  background: #fff9b4 url("image/background.png") no-repeat center bottom / 100% auto;
   overflow: visible;
 }
 
 /* --- CARD UTAMA --- */
 .carousel-container {
   width: 96%;
-  max-width: 1200px;             /* sesuai screenshot */
+  max-width: 1200px; /* sesuai screenshot */
   max-height: 900px;
   margin: 0 auto;
   overflow: hidden;
-  border-radius: 30px;           /* rounded besar */
+  border-radius: 30px; /* rounded besar */
   position: relative;
   background: #000;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
@@ -348,8 +435,8 @@ footer .social-icons a:hover {
 /* --- GAMBAR --- */
 .carousel-media img {
   width: 100%;
-  height: 550px;                /* tinggi sama seperti screenshot */
-  object-fit: cover;            /* biar rapi */
+  height: 550px; /* tinggi sama seperti screenshot */
+  object-fit: cover; /* biar rapi */
   display: block;
 }
 
@@ -361,8 +448,8 @@ footer .social-icons a:hover {
   background: rgba(255, 255, 255, 0.92);
   padding: 35px 35px;
   border-radius: 25px;
-  max-width: 560px;             /* lebar pas seperti di screenshot */
-  box-shadow: 0 8px 25px rgba(0,0,0,0.18);
+  max-width: 560px; /* lebar pas seperti di screenshot */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
   margin-left: 50px;
 }
 
@@ -389,14 +476,14 @@ footer .social-icons a:hover {
   height: 56px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   color: #8e1913;
   font-size: 2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   transition: 0.25s;
   z-index: 10;
 }
@@ -439,14 +526,12 @@ footer .social-icons a:hover {
   }
 }
 
-
-
 /* =========================================================
    FEATURED TITLE
 ========================================================= */
 .featured-title {
-  background-image: url("backgroundTitle.png");
-  background-size: 260px auto;   /* ⬅ ganti dari 20% ke px */
+  background-image: url("image/backgroundTitle.png");
+  background-size: 260px auto; /* ⬅ ganti dari 20% ke px */
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
@@ -456,7 +541,7 @@ footer .social-icons a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;                   /* ⬅ penting, biar lebarnya full */
+  width: 100%; /* ⬅ penting, biar lebarnya full */
 }
 
 .featured-title h2 {
@@ -468,220 +553,78 @@ footer .social-icons a:hover {
   text-align: center;
 }
 
-/* =========================================================
-   AUTH MODAL (LOGIN / REGISTER)
-========================================================= */
-.auth-modal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
+/* ===== Section Toko ===== */
+
+.toko-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: -20px;
 }
 
-.auth-content {
-  background: #fff9b4;
-  border-radius: 25px;
-  padding: 30px 40px;
-  width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  position: relative;
-  animation: pop 0.3s ease;
-}
-
-@keyframes pop {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 24px;
-  color: #8e1913;
-  cursor: pointer;
-}
-
-.form-box {
-  display: none;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-box.active {
+/* Wrapper scroll horizontal */
+.toko-scroll-wrapper {
   display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 5px 15px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.form-box h2 {
-  text-align: center;
-  color: #8e1913;
-  font-family: "Caprasimo", cursive;
-  margin-bottom: 10px;
+/* Hilangkan scrollbar di beberapa browser (opsional) */
+.toko-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
 }
-
-.form-box input,
-.form-box textarea,
-.form-box select {
-  width: 100%;
-  padding: 10px;
+.toko-scroll-wrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
-  border: 1px solid #c9b780;
-  font-family: "Poppins", sans-serif;
+}
+.toko-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
-.switch-form {
-  text-align: center;
-  font-size: 0.9rem;
+/* Card toko = versi horizontal dari menu-card */
+.toko-card {
+  flex: 0 0 260px;        /* lebar minimum card */
+  scroll-snap-align: start;
 }
 
-.switch-form a {
-  color: #8e1913;
-  font-weight: 600;
+/* Biar gambar card toko konsisten */
+.toko-card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 15px 15px 0 0;
 }
 
-/* =========================================================
-   DASHBOARD MEMBER
-========================================================= */
-.dashboard-section {
-  background: #fffaf2;
-  padding: 60px 0;
-}
-
-.dashboard-container {
-  width: 90%;
-  margin: auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.dashboard-tabs {
-  flex: 1 1 200px;
+/* Biar teksnya rapi */
+.toko-card .card-body {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 6px;
 }
 
-.tab-btn {
-  background: linear-gradient(90deg, #d79f90, #fff9b4);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 15px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #8e1913;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: left;
-}
-
-.tab-btn.active,
-.tab-btn:hover {
-  background: linear-gradient(90deg, #bfa12a, #fff9b4);
-  transform: translateX(5px);
-}
-
-.dashboard-content {
-  flex: 3 1 600px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 25px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.tab-content {
-  display: none;
-  animation: fade 0.5s ease;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-.profil-card {
-  text-align: center;
-}
-
-.profil-img {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #d79f90;
-  margin-bottom: 15px;
-}
-
-.profil-nama {
-  font-family: "Caprasimo", cursive;
-  color: #8e1913;
-  font-size: 1.8rem;
-}
-
-.profil-username {
-  color: #bfa12a;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.profil-email,
-.profil-bio,
-.profil-fav {
-  color: #5b4646;
+.toko-card .card-body h5 {
   font-size: 1rem;
+  margin-bottom: 3px;
 }
 
-.edit-btn {
-  margin-top: 20px;
+.toko-card .card-body p {
+  font-size: 0.9rem;
+  margin-bottom: 2px;
 }
 
-#editProfilForm input,
-#editProfilForm textarea {
-  margin-bottom: 10px;
+.toko-card .price {
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
-/* dummy buat postingan */
-/* Modal Upload Postingan (sama style dengan auth modal) */
-#uploadModal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
+/* Supaya tombol melebar penuh dan sedikit turun */
+.toko-card .btn-hero {
+  margin-top: 6px;
+  text-align: center;
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
 }
 
-#uploadModal .auth-content {
-  background: #fff9b4;
-  border-radius: 25px;
-  padding: 30px 40px;
-  width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  position: relative;
-}
 
-#uploadModal .close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 24px;
-  color: #8e1913;
-  cursor: pointer;
-}
