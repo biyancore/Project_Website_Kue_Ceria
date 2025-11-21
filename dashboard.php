@@ -561,6 +561,73 @@
   border-color: #8e1913;
   box-shadow: 0 0 0 0.12rem rgba(142, 25, 19, 0.2);
 }
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.community-card {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.community-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+}
+
+.community-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.community-body {
+  padding: 14px 18px 18px;
+}
+
+.community-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.community-user {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #d75b63;
+}
+
+.community-caption {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.community-meta {
+  font-size: 0.8rem;
+  color: #888;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.community-btn {
+  width: 100%;
+  border-radius: 30px;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(to right, #b79a55, #e3d48c);
+}
+
 
 
 /* =========================================================
@@ -664,6 +731,7 @@ footer .social-icons a:hover {
         <button class="tab-btn active" data-tab="profil">Profil Saya</button>
         <button class="tab-btn" data-tab="posting">Postingan Saya</button>
         <button class="tab-btn" data-tab="favorit">Resep Favorit</button>
+        <button class="tab-btn link-underline-light" data-tab="logout">Log out</button>
       </div>
 
       <div class="dashboard-content">
@@ -788,43 +856,145 @@ footer .social-icons a:hover {
 </div>
 
 
-        <!-- POSTINGAN -->
-        <div class="tab-content" id="posting">
-          <h3>Postingan Saya</h3>
-          <div class="menu-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
-            <div class="menu-card">
-              <img src="post1.jpg" alt="Post 1">
-              <div class="card-body">
-                <h5>Brownies Fudge Super Lembut</h5>
-                <p>Postinganku tentang resep brownies yang lumer banget!</p>
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                  <button class="btn-hero editBtn">Edit</button>
-                  <button class="btn-hero deleteBtn">Hapus</button>
-                </div>
-              </div>
-            </div>
+<!-- POSTINGAN SAYA (DASHBOARD) -->
+<div class="tab-content" id="posting">
+      <div>
+        <h3 class="profile-title">Postingan Saya</h3>
+        <p class="profile-subtitle">
+          Semua resep dan cerita baking yang sudah kamu upload akan muncul di sini. Kalau kamu tambah postingan baru, card-nya akan otomatis bertambah.
+          <br><br>
+        </p>
+      </div>
 
-            <div class="menu-card">
-              <img src="post2.jpg" alt="Post 2">
-              <div class="card-body">
-                <h5>Hiasan Buttercream Pastel</h5>
-                <p>Tips bikin gradasi warna lembut di buttercream 💕</p>
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                  <button class="btn-hero editBtn">Edit</button>
-                  <button class="btn-hero deleteBtn">Hapus</button>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Grid postingan saya (nanti di-loop dari database) -->
+  <div class="community-grid" id="postingSayaList">
 
-          <div style="text-align:center; margin-top:20px;">
-            <button id="tambahPostBtn" class="btn-hero">Tambah Postingan Baru</button>
-          </div>
+    <!-- Contoh card 1 -->
+    <article class="community-card">
+      <img src="image/browniespandan.jpg" alt="Brownies Pandan" class="community-img">
+      <div class="community-body">
+        <h5 class="community-title">Brownies Pandan Super Moist</h5>
+        <p class="community-user">@rina_bakes • Brownies</p>
+        <p class="community-caption">
+          Cobain resep brownies pandan ini, teksturnya lembut dan super moist! 😍
+        </p>
+        <div class="community-meta">
+          <span>❤️ 120 suka</span>
+          <span>•</span>
+          <span>2 jam lalu</span>
         </div>
+        <button class="btn-hero community-btn">Lihat Postingan</button>
+      </div>
+    </article>
+
+    <!-- Contoh card 2 -->
+    <article class="community-card">
+      <img src="image/tart.jpeg" alt="Tart Pastel" class="community-img">
+      <div class="community-body">
+        <h5 class="community-title">Tart Pastel Ulang Tahun</h5>
+        <p class="community-user">@cindy_cake • Cake Tart</p>
+        <p class="community-caption">
+          Tart buttercream warna pastel untuk ulang tahun adikku 🎂💗
+        </p>
+        <div class="community-meta">
+          <span>❤️ 89 suka</span>
+          <span>•</span>
+          <span>kemarin</span>
+        </div>
+        <button class="btn-hero community-btn">Lihat Postingan</button>
+      </div>
+    </article>
+
+    <!-- Contoh card 3 -->
+    <article class="community-card">
+      <img src="image/reseplembut.jpg" alt="Roti Lembut" class="community-img">
+      <div class="community-body">
+        <h5 class="community-title">Roti Susu Super Lembut</h5>
+        <p class="community-user">@andi_kitchen • Roti</p>
+        <p class="community-caption">
+          Sharing tips biar roti lembut tapi nggak bantet, cocok buat sarapan. 🥐
+        </p>
+        <div class="community-meta">
+          <span>❤️ 53 suka</span>
+          <span>•</span>
+          <span>3 hari lalu</span>
+        </div>
+        <button class="btn-hero community-btn">Lihat Postingan</button>
+      </div>
+    </article>
+
+    <!-- Contoh card 4 -->
+    <article class="community-card">
+      <img src="image/cupcake.jpeg" alt="Cupcake Pastel" class="community-img">
+      <div class="community-body">
+        <h5 class="community-title">Cupcake Vanilla Pastel</h5>
+        <p class="community-user">@sweetcup • Cupcake</p>
+        <p class="community-caption">
+          Set cupcake pastel untuk gift box temen kantor, simple tapi cantik 💕
+        </p>
+        <div class="community-meta">
+          <span>❤️ 34 suka</span>
+          <span>•</span>
+          <span>1 minggu lalu</span>
+        </div>
+        <button class="btn-hero community-btn">Lihat Postingan</button>
+      </div>
+    </article>
+
+    <!-- NANTI: postingan baru tinggal ditambah/di-loop di sini -->
+    <!-- Contoh loop PHP / backend -->
+    <!--
+    <?php foreach ($myPosts as $post): ?>
+      <article class="community-card">
+        <?php if (!empty($post['gambar'])): ?>
+          <img src="<?= htmlspecialchars($post['gambar']) ?>"
+               alt="<?= htmlspecialchars($post['judul']) ?>"
+               class="community-img">
+        <?php endif; ?>
+        <div class="community-body">
+          <h5 class="community-title">
+            <?= htmlspecialchars($post['judul']) ?>
+          </h5>
+          <p class="community-user">
+            @<?= htmlspecialchars($post['username']) ?> •
+            <?= htmlspecialchars($post['kategori']) ?>
+          </p>
+          <p class="community-caption">
+            <?= htmlspecialchars($post['caption']) ?>
+          </p>
+          <div class="community-meta">
+            <span>❤️ <?= (int)$post['likes'] ?> suka</span>
+            <span>•</span>
+            <span><?= htmlspecialchars($post['waktu_relative']) ?></span>
+          </div>
+          <button class="btn-hero community-btn"
+                  data-id="<?= (int)$post['id'] ?>">
+            Lihat Postingan
+          </button>
+        </div>
+      </article>
+    <?php endforeach; ?>
+    -->
+  </div>
+
+  <div style="text-align:center; margin-top:25px;">
+    <button id="tambahPostBtn" class="btn-hero" style="max-width:260px;">
+      Tambah Postingan Baru
+    </button>
+  </div>
+</div>
+
+
 
         <!-- RESEP FAVORIT -->
         <div class="tab-content" id="favorit">
-          <h3>Resep Favorit Saya</h3>
+           <div>
+        <h3 class="profile-title">Resep Favorit Saya</h3>
+        <p class="profile-subtitle">
+          Semua resep kamu simpan akan muncul di sini. 
+        </p>
+        <br>
+      </div>
           <div class="menu-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
           </div>
         </div>
@@ -832,6 +1002,7 @@ footer .social-icons a:hover {
       </div>
     </div>
   </section>
+  
 
     <!-- ================= MODAL UPLOAD POSTINGAN ================= -->
   <div id="uploadModal" class="auth-modal">

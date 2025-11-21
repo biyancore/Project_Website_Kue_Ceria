@@ -116,6 +116,12 @@
   overflow: visible;">
   <div class="menu-section artikel-section">
     <div class="featured-title"><h2>Artikel Kuliner Terbaru</h2></div>
+
+          <p style="text-align:center; margin-bottom:20px; max-width:700px; margin:0 auto 25px; font-size:16px;">
+        Artikel terbaru seputar dunia kue, per-bakingan, dan berbagai inspirasi seputar kue akan
+        ada semuanya disini. Kunjungi dan jelajahi untuk dapat lebih banyak berita tentang kue.
+      </p>
+
     <div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px;">
       <div class="menu-card">
         <img src="image/nastar.jpeg" alt="Artikel 1">
@@ -159,6 +165,12 @@
   overflow: visible;">
   <div class="menu-section resep-section">
     <div class="featured-title"><h2>Resep Kue Populer</h2></div>
+
+          <p style="text-align:center; max-width:700px; margin:0 auto 25px; font-size:16px;">
+        Jelajahi berbagai resep kue pilihan – dari kue tart ulang tahun, cupcake lucu,
+        pudding lembut, hingga aneka kue tradisional favorit.
+      </p>
+
     <div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;">
       <div class="menu-card">
         <img src="image/coklatlumer.jpg" alt="Resep 1">
@@ -213,9 +225,8 @@
       <h2>Komunitas Pecinta Kue</h2>
     </div>
 
-    <p style="text-align:center; max-width:720px; margin:0 auto 25px; font-size:0.95rem;">
+    <p style="text-align:center; max-width:720px; margin:0 auto 25px; font-size:16px;">
       Lihat hasil kreasi dan cerita baking dari para member Ceria Bakery.
-      Postingan terbaru akan tampil otomatis di sini.
     </p>
 
     <!-- Grid postingan komunitas (nanti bisa di-loop dari database) -->
