@@ -9,7 +9,7 @@ $id_user = $_SESSION['id_user'];
 
 function uploadGambar($fieldName, $oldFile = null) {
     if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] === 4) {
-        return $oldFile; // tidak ada gambar baru
+        return $oldFile; 
     }
 
     $folder = 'uploads/';
@@ -146,7 +146,7 @@ if (isset($_POST['aksi']) && $_POST['aksi'] === 'tambah') {
     $stmt->bind_param("sssi", $judul, $isi, $gambar, $id_user);
     $stmt->execute();
 
-    header("Location: dashboard.php#posting"); // sesuaikan dengan nama file kamu
+    header("Location: dashboard.php#posting"); 
     exit;
 }
 

@@ -190,7 +190,7 @@
   <div class="auth-wrapper">
     <div class="auth-card">
 
-      <!-- PANEL KIRI: ILUSTRASI -->
+     
       <div class="auth-illustration">
         <div>
           <div class="mini-badge">
