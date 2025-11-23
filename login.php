@@ -14,16 +14,16 @@ unset($_SESSION['flash_success']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ceria Bakery | Login</title>
 
-  <!-- FONT & ICONS -->
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Lobster&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- BOOTSTRAP -->
+ 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-  <!-- STYLE GLOBAL (boleh hapus kalau sudah ada di stylebaru.css) -->
+  
   <style>
     body {
       min-height: 100vh;
@@ -219,7 +219,7 @@ unset($_SESSION['flash_success']);
   <div class="auth-wrapper">
     <div class="auth-card">
 
-      <!-- PANEL KIRI: ILUSTRASI -->
+      
       <div class="auth-illustration">
         <div>
           <div class="mini-badge">
@@ -247,7 +247,7 @@ unset($_SESSION['flash_success']);
         </div>
       </div>
 
-      <!-- PANEL KANAN: FORM LOGIN -->
+     
       <div class="auth-form-panel">
         <div class="auth-logo">
           <img src="image/ceria.png" alt="Ceria Bakery Logo">
@@ -287,7 +287,7 @@ unset($_SESSION['flash_success']);
                 Ingat akun
               </label>
             </div>
-            <!-- Optional: lupa password -->
+           
             <a href="#">Lupa password?</a>
           </div>
 
@@ -314,7 +314,6 @@ unset($_SESSION['flash_success']);
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Toggle show/hide password
       document.querySelectorAll(".password-toggle").forEach(toggle => {
         toggle.addEventListener("click", () => {
           const targetSelector = toggle.getAttribute("data-target");
@@ -331,12 +330,9 @@ unset($_SESSION['flash_success']);
         });
       });
 
-      // ====== Fitur "Ingat Akun" pakai localStorage ======
       const rememberCheckbox = document.getElementById("rememberMe");
       const loginUsername = document.getElementById("loginUsername");
       const loginForm = document.getElementById("loginForm");
-
-      // Saat halaman dibuka, cek apakah ada username yang di-remember
       const rememberedData = localStorage.getItem("ceriaRemember");
       if (rememberedData) {
         try {
@@ -350,7 +346,7 @@ unset($_SESSION['flash_success']);
         }
       }
 
-      // Saat login dikirim, simpan / hapus remember
+      
       if (loginForm) {
         loginForm.addEventListener("submit", () => {
           if (!loginUsername) return;
@@ -360,7 +356,7 @@ unset($_SESSION['flash_success']);
           } else {
             localStorage.removeItem("ceriaRemember");
           }
-          // Biarkan form lanjut ke backend (proses_login.php)
+          
         });
       }
     });

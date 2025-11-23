@@ -1,14 +1,12 @@
 <?php
-// Cek login (ini sudah otomatis session_start di dalamnya)
-require 'cek_login.php';
+include 'cek_login.php';
 
-// Koneksi ke database
-require 'koneksi.php';
+include 'koneksi.php';
 
-// id user yang sedang login
+
 $id_user = $_SESSION['id_user'];
 
-// --- fungsi upload gambar ---
+
 function uploadGambar($fieldName, $oldFile = null) {
     if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] === 4) {
         return $oldFile; // tidak ada gambar baru
@@ -27,7 +25,7 @@ function uploadGambar($fieldName, $oldFile = null) {
 
     move_uploaded_file($tmpName, $folder . $newName);
 
-    // hapus file lama (kalau ada)
+    
     if ($oldFile && file_exists($folder . $oldFile)) {
         unlink($folder . $oldFile);
     }
@@ -35,7 +33,7 @@ function uploadGambar($fieldName, $oldFile = null) {
     return $newName;
 }
 
-// ========== UPDATE PROFIL USER ==========
+
 if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_profil') {
     $nama_lengkap  = trim($_POST['nama_lengkap'] ?? '');
     $username      = trim($_POST['username'] ?? '');
@@ -47,7 +45,7 @@ if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_profil') {
     if ($nama_lengkap === '' || $username === '' || $email === '') {
         $error_profil = "Nama, username, dan email wajib diisi.";
     } else {
-        // Cek username / email tidak dipakai user lain
+        
         $cek = $koneksi->prepare("
             SELECT id_user FROM users 
             WHERE (username = ? OR email = ?) AND id_user != ?
@@ -77,7 +75,6 @@ if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_profil') {
             );
 
             if ($stmtUpd->execute()) {
-                // update session biar nama/username ke-refresh
                 $_SESSION['nama_lengkap'] = $nama_lengkap;
                 $_SESSION['username']     = $username;
                 $_SESSION['email']        = $email;
@@ -91,7 +88,6 @@ if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_profil') {
     }
 }
 
-// ========== UPDATE FOTO PROFIL ==========
 if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_foto') {
 
     $folder = "uploads/profil/";
@@ -100,18 +96,16 @@ if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_foto') {
     $foto = $_FILES['foto_profil'];
     $ext = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
 
-    // buat nama unik
     $newName = uniqid('profil_', true) . "." . $ext;
 
-    // pindahkan ke uploads/profil/
     move_uploaded_file($foto['tmp_name'], $folder . $newName);
 
-    // hapus foto lama (jika ada)
+    
     if (!empty($user['foto_profil']) && file_exists($folder . $user['foto_profil'])) {
         unlink($folder . $user['foto_profil']);
     }
 
-    // update db
+    
     $update = $koneksi->prepare("UPDATE users SET foto_profil=? WHERE id_user=?");
     $update->bind_param("si", $newName, $id_user);
     $update->execute();
@@ -121,7 +115,7 @@ if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_foto') {
 }
 
 
-// ========== hapus foto ptofile ==========
+
 if (isset($_GET['hapus_foto'])) {
     $folder = "uploads/profil/";
 
@@ -140,7 +134,7 @@ if (isset($_GET['hapus_foto'])) {
 }
 
 
-// ========== CREATE (TAMBAH POSTINGAN) ==========
+
 if (isset($_POST['aksi']) && $_POST['aksi'] === 'tambah') {
     $judul  = $_POST['judul'];
     $isi    = $_POST['isi'];
@@ -156,13 +150,13 @@ if (isset($_POST['aksi']) && $_POST['aksi'] === 'tambah') {
     exit;
 }
 
-// ========== UPDATE (EDIT POSTINGAN) ==========
+
 if (isset($_POST['aksi']) && $_POST['aksi'] === 'update') {
     $id_komunitas = (int)$_POST['id_komunitas'];
     $judul        = $_POST['judul'];
     $isi          = $_POST['isi'];
 
-    // ambil gambar lama
+    
     $res = $koneksi->query("SELECT gambar FROM komunitas WHERE id_komunitas=$id_komunitas AND id_user=$id_user");
     $row = $res->fetch_assoc();
     $oldGambar = $row['gambar'] ?? null;
@@ -179,11 +173,11 @@ if (isset($_POST['aksi']) && $_POST['aksi'] === 'update') {
     exit;
 }
 
-// ========== DELETE (HAPUS POSTINGAN) ==========
+
 if (isset($_GET['hapus'])) {
     $id_komunitas = (int)$_GET['hapus'];
 
-    // hapus file gambar dulu
+    
     $res = $koneksi->query("SELECT gambar FROM komunitas WHERE id_komunitas=$id_komunitas AND id_user=$id_user");
     if ($row = $res->fetch_assoc()) {
         if ($row['gambar'] && file_exists('uploads/' . $row['gambar'])) {
@@ -197,7 +191,7 @@ if (isset($_GET['hapus'])) {
     exit;
 }
 
-// ========== READ (AMBIL SEMUA POSTINGAN SAYA) ==========
+
 $stmt = $koneksi->prepare("
     SELECT k.*, u.username 
     FROM komunitas k 
@@ -209,7 +203,7 @@ $stmt->bind_param("i", $id_user);
 $stmt->execute();
 $posts = $stmt->get_result();
 
-// data untuk MODE EDIT (kalau ada ?edit=)
+
 $editPost = null;
 if (isset($_GET['edit'])) {
     $id_edit = (int)$_GET['edit'];
@@ -217,7 +211,7 @@ if (isset($_GET['edit'])) {
     $editPost = $resEdit->fetch_assoc();
 }
 
-// ========== DATA USER YANG LOGIN ==========
+
 $userStmt = $koneksi->prepare("
     SELECT nama_lengkap, username, email, tanggal_lahir, jenis_kelamin, alasan 
     FROM users 
@@ -238,8 +232,6 @@ $user = $userRes->fetch_assoc();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ceria Bakery | Dashboard Member</title>
-
-  <!-- FONT + ICON + CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Lobster&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -264,9 +256,6 @@ $user = $userRes->fetch_assoc();
   overflow-x: hidden;
   scroll-behavior: smooth;
     }
-/* =========================================================
-   NAVBAR
-========================================================= */
 .navbar {
   position: fixed;
   top: 0;
@@ -348,16 +337,14 @@ $user = $userRes->fetch_assoc();
 }
 
 .nav-icons a i {
-  color: #8e1913; /* biar gak nyaru sama background */
+  color: #8e1913; 
   font-size: 26px;
   cursor: pointer;
   position: relative;
   z-index: 2001;
 }
 
-/* =========================================================
-   MENU SECTION
-========================================================= */
+
 
 .menu-card {
   border-radius: 20px;
@@ -383,9 +370,7 @@ $user = $userRes->fetch_assoc();
   padding: 15px 18px;
 }
 
-/* =========================================================
-   AUTH MODAL (LOGIN / REGISTER)
-========================================================= */
+
 .auth-modal {
   display: none;
   position: fixed;
@@ -466,9 +451,7 @@ $user = $userRes->fetch_assoc();
   font-weight: 600;
 }
 
-   /* =========================================================
-   DASHBOARD MEMBER
-========================================================= */
+  
 .dashboard-section {
   background: #fffaf2;
   padding: 60px 0;
@@ -571,8 +554,7 @@ $user = $userRes->fetch_assoc();
   margin-bottom: 10px;
 }
 
-/* dummy buat postingan */
-/* Modal Upload Postingan (sama style dengan auth modal) */
+
 #uploadModal {
   display: none;
   position: fixed;
@@ -604,7 +586,7 @@ $user = $userRes->fetch_assoc();
   cursor: pointer;
 }
 
-/* ===== PROFILE SETTINGS NEW LAYOUT ===== */
+
 
 .profile-settings {
   display: flex;
@@ -633,7 +615,6 @@ $user = $userRes->fetch_assoc();
   margin: 0;
 }
 
-/* blok Basic info / Account info */
 .profile-section {
   background: rgba(255, 249, 180, 0.7);
   border-radius: 22px;
@@ -648,7 +629,6 @@ $user = $userRes->fetch_assoc();
   margin-bottom: 12px;
 }
 
-/* Foto profil + teks di samping */
 .profile-basic-layout {
   display: flex;
   align-items: center;
@@ -666,7 +646,6 @@ $user = $userRes->fetch_assoc();
   background: #fff;
 }
 
-/* Override ukuran lama di dalam wrapper */
 .profile-avatar-wrapper .profil-img {
   width: 100%;
   height: 100%;
@@ -724,7 +703,6 @@ $user = $userRes->fetch_assoc();
   margin: 0;
 }
 
-/* Baris-baris info */
 .profile-rows {
   margin-top: 6px;
 }
@@ -760,14 +738,13 @@ $user = $userRes->fetch_assoc();
   padding-left: 8px;
 }
 
-/* Form edit profil di bawahnya */
 #editProfilForm {
   margin-top: 5px;
   background: #ffffff;
   border-radius: 20px;
   padding: 18px 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
-  display: none;              /* default hidden, ditoggle JS */
+  display: none;             
   flex-direction: column;
   gap: 10px;
 }
@@ -795,7 +772,7 @@ $user = $userRes->fetch_assoc();
   border-color: #8e1913;
   box-shadow: 0 0 0 0.12rem rgba(142, 25, 19, 0.2);
 }
-/* --- CARD KECIL POSTINGAN --- */
+
 .community-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -825,8 +802,6 @@ $user = $userRes->fetch_assoc();
   object-fit: cover;
 }
 
-
-/* BODY CARD */
 .community-body {
   padding: 14px 16px 18px;
 }
@@ -862,7 +837,6 @@ $user = $userRes->fetch_assoc();
   margin-bottom: 10px;
 }
 
-/* Tombol */
 .community-btn {
   width: 100%;
   border-radius: 30px;
@@ -872,7 +846,6 @@ $user = $userRes->fetch_assoc();
   background: linear-gradient(to right, #b79a55, #e3d48c);
 }
 
-/* Override style btn-hero ketika dipakai sebagai tombol card */
 #posting .community-btn.btn-hero {
   margin-top: 0 !important;
   padding: 8px 0 !important;
@@ -880,12 +853,6 @@ $user = $userRes->fetch_assoc();
   box-shadow: none;
 }
 
-
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
 footer {
   text-align: center;
   padding: 20px;
@@ -925,12 +892,10 @@ footer .social-icons a:hover {
   transform: translateY(-2px);
 }
 
-/* =========================================================
-   FEATURED TITLE
-========================================================= */
+
 .featured-title {
   background-image: url("image/backgroundTitle.png");
-  background-size: 260px auto;   /* ⬅ ganti dari 20% ke px */
+  background-size: 260px auto;   
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
@@ -940,7 +905,7 @@ footer .social-icons a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;                   /* ⬅ penting, biar lebarnya full */
+  width: 100%;                   
 }
 
 .featured-title h2 {
@@ -955,7 +920,6 @@ footer .social-icons a:hover {
 </head>
 <body>
 
-<!-- ================= NAVBAR ================= -->
 <nav class="navbar">
   <div class="navbar-left">
     <img src="image/ceria.png" alt="Logo Ceria Bakery" class="logo">
@@ -974,12 +938,10 @@ footer .social-icons a:hover {
   </div>
 </nav>
 
-<!-- ================= DASHBOARD MEMBER ================= -->
 <section id="dashboard" class="dashboard-section">
   <div class="featured-title"><h2>Dashboard Member</h2></div>
   <div class="dashboard-container">
 
-    <!-- Tabs -->
     <div class="dashboard-tabs">
       <button class="tab-btn active" data-tab="profil">Profil Saya</button>
       <button class="tab-btn" data-tab="posting">Postingan Saya</button>
@@ -987,14 +949,9 @@ footer .social-icons a:hover {
       <button class="tab-btn link-underline-light" data-tab="logout">Log out</button>
     </div>
 
-    <!-- ==== KONTEN TIAP TAB ==== -->
     <div class="dashboard-content">
-
-      <!-- ========== TAB PROFIL ========== -->
       <div class="tab-content active" id="profil">
         <div class="profile-settings">
-
-          <!-- Header judul + tombol edit -->
           <div class="profile-header-line">
             <div>
               <h3 class="profile-title">Pengaturan Akun</h3>
@@ -1007,7 +964,6 @@ footer .social-icons a:hover {
             </button>
           </div>
 
-          <!-- BASIC INFO -->
           <div class="profile-section">
             <h4 class="profile-section-heading">Basic info</h4>
 
