@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$loginInput = trim($_POST['username'] ?? ''); // bisa username atau email
+$loginInput = trim($_POST['username'] ?? ''); 
 $password   = $_POST['password'] ?? '';
 
 if ($loginInput === '' || $password === '') {
@@ -15,7 +15,7 @@ if ($loginInput === '' || $password === '') {
     exit;
 }
 
-// Cari user berdasarkan username ATAU email
+
 $stmt = $koneksi->prepare("
     SELECT * FROM users
     WHERE username = ? OR email = ?
@@ -32,20 +32,18 @@ if ($result->num_rows === 0) {
 
 $user = $result->fetch_assoc();
 
-// Cek password
+
 if (!password_verify($password, $user['password'])) {
     echo "<script>alert('Password salah.'); window.history.back();</script>";
     exit;
 }
 
-// LOGIN BERHASIL → simpan data penting ke session
+
 $_SESSION['id_user']      = $user['id_user'];
 $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
 $_SESSION['username']     = $user['username'];
 $_SESSION['email']        = $user['email'];
 
-// Bisa juga kamu simpan role, dll kalau nanti ada
 
-// Redirect ke dashboard
 header('Location: index_baru.php');
 exit;

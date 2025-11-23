@@ -4,20 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ceria Bakery | Komunitas Pecinta Kue</title>
-
-  <!-- CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Lobster&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="stylebaru.css"> <!-- HARUS SETELAH Bootstrap -->
+<link rel="stylesheet" href="stylebaru.css"> 
 <script src="https://kit.fontawesome.com/5b43f676d3.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-
-  <!-- ================= NAVBAR ================= -->
 <nav class="navbar">
   <div class="navbar-left">
     <img src="image/ceria.png" alt="Logo Ceria Bakery" class="logo">
@@ -37,7 +33,6 @@
 </nav>
 
 
-  <!-- ================= HERO SECTION ================= -->
   <section id="hero">
     <div class="container-utama">
       <div class="hero-content">
@@ -54,15 +49,12 @@
     </div>
   </section>
 
-  <!-- ================= BERITA TERKINI ================= -->
 <section id="berita" class="carousel-section">
   <div class="featured-title">
     <h2>Berita Terkini Dunia Kue</h2>
   </div>
 
   <div class="carousel-container">
-
-    <!-- SLIDE 1 -->
     <div class="carousel-slide active">
       <div class="carousel-media">
         <img src="image/festivalkue.jpeg" alt="Berita 1">
@@ -74,7 +66,7 @@
       </div>
     </div>
 
-    <!-- SLIDE 2 -->
+    
     <div class="carousel-slide">
       <div class="carousel-media">
         <img src="image/dessertasia.jpeg" alt="Berita 2">
@@ -86,7 +78,7 @@
       </div>
     </div>
 
-    <!-- SLIDE 3 -->
+   
     <div class="carousel-slide">
       <div class="carousel-media">
         <img src="image/pastelcake.jpeg" alt="Berita 3">
@@ -98,14 +90,14 @@
       </div>
     </div>
 
-    <!-- TOMBOL -->
+    
     <button class="carousel-btn prev">&#10094;</button>
     <button class="carousel-btn next">&#10095;</button>
   </div>
 </section>
 
 
-  <!-- ================= ARTIKEL ================= -->
+ 
   <section id="artikel" 
   style="position: relative;
   width: 100%;
@@ -154,7 +146,6 @@
   </div>
   </section>
 
-  <!-- ================= RESEP ================= -->
   <section id="resep" 
   style="position: relative;
   width: 100%;
@@ -209,7 +200,6 @@
   </div>
   </section>
 
-<!-- ================= KOMUNITAS ================= -->
 <section id="komunitas"
   style="
     position: relative;
@@ -229,9 +219,7 @@
       Lihat hasil kreasi dan cerita baking dari para member Ceria Bakery.
     </p>
 
-    <!-- Grid postingan komunitas (nanti bisa di-loop dari database) -->
     <div class="community-grid" id="komunitasList">
-      <!-- Contoh card 1 -->
       <article class="community-card">
         <img src="image/browniespandan.jpg" alt="Brownies Pandan @rina_bakes" class="community-img">
         <div class="community-body">
@@ -249,7 +237,6 @@
         </div>
       </article>
 
-      <!-- Contoh card 2 -->
       <article class="community-card">
         <img src="image/tart.jpeg" alt="Pastel Tart by @cindy_cake" class="community-img">
         <div class="community-body">
@@ -267,7 +254,6 @@
         </div>
       </article>
 
-      <!-- Contoh card 3 -->
       <article class="community-card">
         <img src="image/reseplembut.jpg" alt="Roti Lembut by @andi_kitchen" class="community-img">
         <div class="community-body">
@@ -285,7 +271,6 @@
         </div>
       </article>
 
-      <!-- Contoh card 4 -->
       <article class="community-card">
         <img src="image/cupcake.jpeg" alt="Cupcake @sweetcup" class="community-img">
         <div class="community-body">
@@ -303,8 +288,6 @@
         </div>
       </article>
 
-      <!-- NANTI: postingan baru tinggal ditambah/di-loop di sini -->
-      <!-- Contoh struktur untuk loop PHP:
       <?php foreach ($posts as $post): ?>
         <article class="community-card">
           <img src="<?= htmlspecialchars($post['gambar']) ?>" alt="<?= htmlspecialchars($post['judul']) ?>" class="community-img">
@@ -331,7 +314,7 @@
 </section>
 
 
-    <!-- ================= TOKO ================= -->
+
   <section id="toko"
     style="
       position: relative;
@@ -349,10 +332,7 @@
         Jelajahi berbagai toko kue pilihan – dari kue tart ulang tahun, cupcake lucu,
         pudding lembut, hingga aneka kue tradisional favorit.
       </p>
-
-      <!-- Wrapper scroll horizontal -->
       <div class="toko-scroll-wrapper">
-        <!-- 1. Toko Tart -->
         <div class="menu-card toko-card">
           <img src="image/cupcakeShop.jpg" alt="Sweet Tart Studio">
           <div class="card-body">
@@ -363,7 +343,6 @@
           </div>
         </div>
 
-        <!-- 2. Toko Cupcake -->
         <div class="menu-card toko-card">
           <img src="image/sweetTart.jpg" alt="Cupcake Corner">
           <div class="card-body">
@@ -374,7 +353,6 @@
           </div>
         </div>
 
-        <!-- 3. Toko Pudding -->
         <div class="menu-card toko-card">
           <img src="image/puddingShop.jpg" alt="Pudding & Jelly House">
           <div class="card-body">
@@ -385,7 +363,6 @@
           </div>
         </div>
 
-        <!-- 4. Toko Roti & Kue Harian -->
         <div class="menu-card toko-card">
           <img src="image/dailyBread.jpg" alt="Daily Bread & Cake">
           <div class="card-body">
@@ -396,7 +373,6 @@
           </div>
         </div>
 
-        <!-- 5. Toko Kue Tradisional -->
         <div class="menu-card toko-card">
           <img src="image/nusantaraCake.jpg" alt="Nusantara Cake House">
           <div class="card-body">
@@ -407,7 +383,6 @@
           </div>
         </div>
 
-        <!-- 6. Toko Cookies -->
         <div class="menu-card toko-card">
           <img src="image/cookieJar.jpg" alt="Cookie Jar Bakery">
           <div class="card-body">
@@ -427,7 +402,6 @@
 
 
 
-  <!-- ================= FOOTER ================= -->
   <footer>
     <div class="social-icons">
       <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -436,11 +410,8 @@
     </div>
     <p>© 2025 Ceria Bakery. Semua Hak Dilindungi.</p>
   </footer>
-
-    <!-- ================= SCRIPT ================= -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Nav-link aktif sesuai scroll + styling nav-menu -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const navLinks = document.querySelectorAll(".nav-link");
@@ -461,7 +432,6 @@
         });
       });
 
-      // styling nav-menu (kalau mau, ini bisa dipindah ke CSS)
       document.querySelectorAll(".nav-menu").forEach(ul => {
         ul.style.listStyle = "none";
         ul.style.display = "flex";
@@ -472,7 +442,7 @@
     });
   </script>
 
-  <!-- Navbar berubah saat discroll -->
+  
   <script>
     window.addEventListener("scroll", () => {
       const navbar = document.querySelector(".navbar");
@@ -484,7 +454,6 @@
     });
   </script>
 
-  <!-- Carousel Berita -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       let slideIndex = 0;
@@ -522,7 +491,6 @@
   </script>
 
 <script>
-// =============== LINK HALAMAN RESEP (GLOBAL) ===============
 const resepLinks = {
     coklatlumer: "resep/resep-coklatlumer.php",
     bolupandan: "resep/resep-bolupandan.php",
@@ -531,30 +499,23 @@ const resepLinks = {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // --- FUNGSI UTAMA ---
-
-    // Ambil data favorit dari LocalStorage
     function getFavorites() {
         const favorites = localStorage.getItem('ceriaFavorites');
         return favorites ? JSON.parse(favorites) : {};
     }
 
-    // Simpan data favorit
     function saveFavorites(favorites) {
         localStorage.setItem('ceriaFavorites', JSON.stringify(favorites));
     }
 
-    // Render daftar favorit ke dashboard (tab #favorit)
     function renderFavoritesDashboard() {
         const favorites = getFavorites();
         const container = document.querySelector('#favorit .menu-grid');
 
-        // Kalau elemen #favorit nggak ada (misalnya di index), langsung keluar
         if (!container) return;
 
         container.innerHTML = '';
 
-        // Jika tidak ada favorit
         if (Object.keys(favorites).length === 0) {
             container.innerHTML =
                 `<p style="grid-column: 1/-1; text-align: center; padding: 20px;">
@@ -563,7 +524,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Generate card favorit
         for (const id in favorites) {
             const resep = favorites[id];
             const cardHtml = `
@@ -589,7 +549,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Toggle tambah / hapus favorit
     function toggleFavorite(id, isDeletion = false) {
         const favorites = getFavorites();
         const icon = document.querySelector(`.favorite-icon[data-resep-id="${id}"]`);
@@ -615,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateIconVisuals();
     }
 
-    // Update ikon love di semua halaman (index & dashboard)
+    
     function updateIconVisuals() {
         const favorites = getFavorites();
         document.querySelectorAll('.favorite-icon').forEach(icon => {
@@ -624,9 +583,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================= EVENT DELEGATION =================
+    
 
-    // 1. Klik ikon love di card resep (index / halaman lain)
+    
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("favorite-icon")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -634,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 2. Klik tombol "Hapus" di dashboard
+   
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("delete-fav-btn")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -642,7 +601,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 3. Klik tombol "Lihat Resep"
+    
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("lihat-resep-btn")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -656,21 +615,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= INISIALISASI AWAL =================
-    updateIconVisuals();       // warnai ikon love sesuai favorit
-    renderFavoritesDashboard(); // kalau ada #favorit, isi kartunya
+    
+    updateIconVisuals();       
+    renderFavoritesDashboard(); 
 });
 </script>
 
 
-<!-- alert kunjungi toko -->
+
   <script>
 document.addEventListener("click", function(e) {
   if (e.target.classList.contains("btn-toko")) {
 
     alert("Anda diarahkan ke WhatsApp toko untuk pemesanan dan lihat katalog produk");
 
-    // Tidak ada redirect → hanya alert
   }
 });
 </script>

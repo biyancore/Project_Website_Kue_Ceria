@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Festival Kue Nusantara 2025 Resmi Dibuka!</title>
 
-  <!-- kalau kamu sudah load font di stylebaru.css, yang ini boleh dihapus -->
+  
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>

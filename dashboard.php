@@ -966,8 +966,6 @@ footer .social-icons a:hover {
 
           <div class="profile-section">
             <h4 class="profile-section-heading">Basic info</h4>
-
-            <!-- Foto profil -->
             <div class="profile-basic-layout">
               <div class="profile-avatar-wrapper">
                 <?php
@@ -996,7 +994,6 @@ footer .social-icons a:hover {
               </div>
             </div>
 
-            <!-- Form upload foto (hidden input + auto submit) -->
             <form
               id="uploadFotoForm"
               method="post"
@@ -1014,7 +1011,6 @@ footer .social-icons a:hover {
               <input type="hidden" name="aksi_profil" value="update_foto">
             </form>
 
-            <!-- Baris data basic info -->
             <div class="profile-rows">
               <div class="profile-row">
                 <span class="profile-row-label">Nama</span>
@@ -1060,7 +1056,6 @@ footer .social-icons a:hover {
             </div>
           </div>
 
-          <!-- ACCOUNT INFO -->
           <div class="profile-section">
             <h4 class="profile-section-heading">Account info</h4>
 
@@ -1085,7 +1080,6 @@ footer .social-icons a:hover {
             </div>
           </div>
 
-          <!-- FORM EDIT PROFIL -->
           <form id="editProfilForm" class="form-box" method="post" action="#profil">
             <h3>Edit Profil</h3>
 
@@ -1154,7 +1148,6 @@ footer .social-icons a:hover {
         </div>
       </div>
 
-      <!-- ========== TAB POSTINGAN SAYA ========== -->
       <div class="tab-content" id="posting">
         <div>
           <h3 class="profile-title">Postingan Saya</h3>
@@ -1239,7 +1232,6 @@ footer .social-icons a:hover {
         </div>
       </div>
 
-      <!-- ========== TAB RESEP FAVORIT ========== -->
       <div class="tab-content" id="favorit">
         <div>
           <h3 class="profile-title">Resep Favorit Saya</h3>
@@ -1250,11 +1242,9 @@ footer .social-icons a:hover {
         </div>
 
         <div class="menu-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
-          <!-- JS renderFavoritesDashboard() akan mengisi kartu di sini -->
         </div>
       </div>
 
-      <!-- ========== TAB LOGOUT (OPTIONAL) ========== -->
       <div class="tab-content" id="logout">
         <h3 class="profile-title">Keluar Akun</h3>
         <p class="profile-subtitle">
@@ -1264,16 +1254,15 @@ footer .social-icons a:hover {
         <a href="logout.php" class="btn-hero">Log out</a>
       </div>
 
-    </div> <!-- end .dashboard-content -->
-  </div>   <!-- end .dashboard-container -->
+    </div> 
+  </div>   
 </section>
 
-<!-- ================= MODAL UPLOAD POSTINGAN ================= -->
 <div id="uploadModal" class="auth-modal">
   <div class="auth-content" style="max-width:430px;">
     <span class="close-btn">&times;</span>
 
-    <!-- form dipakai untuk TAMBAH & EDIT -->
+    
     <form id="uploadForm"
           class="form-box active"
           method="post"
@@ -1318,12 +1307,10 @@ footer .social-icons a:hover {
   </div>
 </div>
 
-<!-- ================= MODAL LIHAT POSTINGAN ================= -->
 <div id="viewPostModal" class="auth-modal">
   <div class="auth-content" style="max-width:460px; padding:22px 22px 26px;">
     <span class="close-btn close-view-post">&times;</span>
 
-    <!-- Card postingan di dalam modal -->
     <article class="community-card" style="margin-bottom:0;">
       <img id="viewPostImage"
            src=""
@@ -1333,17 +1320,14 @@ footer .social-icons a:hover {
 
       <div class="community-body">
         <h5 id="viewPostTitle" class="community-title">
-          <!-- judul diisi via JS -->
         </h5>
 
         <p id="viewPostUser" class="community-user">
-          <!-- @username • Komunitas -->
         </p>
 
         <p id="viewPostIsi"
            class="community-caption"
            style="height:auto; max-height:none; margin-bottom:10px;">
-          <!-- isi postingan -->
         </p>
 
         <div class="community-meta">
@@ -1356,8 +1340,6 @@ footer .social-icons a:hover {
   </div>
 </div>
 
-
-  <!-- ================= FOOTER ================= -->
   <footer>
     <div class="social-icons">
       <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -1370,7 +1352,6 @@ footer .social-icons a:hover {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  // localStorage.clear()
 document.addEventListener("DOMContentLoaded", () => {
   const navLinks = document.querySelectorAll(".nav-link");
   const sections = document.querySelectorAll("section");
@@ -1394,7 +1375,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // Paksa hapus bullet
   document.querySelectorAll(".nav-menu").forEach(ul => {
     ul.style.listStyle = "none";
     ul.style.display = "flex";
@@ -1424,13 +1404,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const uploadForm = document.getElementById("uploadFotoForm");
 
   if (uploadLink && inputFoto && uploadForm) {
-    // Klik teks "Upload foto baru" => buka file picker
     uploadLink.addEventListener("click", function(e) {
       e.preventDefault();
       inputFoto.click();
     });
 
-    // Begitu user pilih file => form auto-submit
     inputFoto.addEventListener("change", function() {
       if (inputFoto.files.length > 0) {
         uploadForm.submit();
@@ -1451,7 +1429,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const isiEl       = document.getElementById("viewPostIsi");
   const closeView   = document.querySelector(".close-view-post");
 
-  // Delegasi click ke tombol "Lihat Postingan"
   document.addEventListener("click", function(e) {
     if (e.target.classList.contains("lihat-post-btn")) {
       const btn = e.target;
@@ -1464,13 +1441,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (imgEl)   imgEl.src = gambar;
       if (titleEl) titleEl.textContent = judul;
       if (userEl)  userEl.textContent  = user;
-      if (isiEl)   isiEl.innerHTML     = isi; // sudah di-escape dari PHP
+      if (isiEl)   isiEl.innerHTML     = isi; 
 
       if (viewModal) viewModal.style.display = "flex";
     }
   });
 
-  // Tutup modal
+  
   if (closeView) {
     closeView.addEventListener("click", () => {
       viewModal.style.display = "none";
@@ -1486,7 +1463,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-  <!-- Dashboard Tabs & Edit Profil -->
+  
   <script>
 document.addEventListener("DOMContentLoaded", () => {
   const tabBtns = document.querySelectorAll(".tab-btn");
@@ -1514,9 +1491,8 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 
 
-<!-- dashboard resep love yang bisa dihapus -->
+
 <script>
-// =============== LINK HALAMAN RESEP (GLOBAL) ===============
 const resepLinks = {
     coklatlumer: "resep/resep-coklatlumer.php",
     bolupandan: "resep/resep-bolupandan.php",
@@ -1525,21 +1501,13 @@ const resepLinks = {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    // --- FUNGSI UTAMA ---
-
-    // Ambil data favorit dari LocalStorage
     function getFavorites() {
         const favorites = localStorage.getItem('ceriaFavorites');
         return favorites ? JSON.parse(favorites) : {};
     }
-
-    // Simpan data favorit
     function saveFavorites(favorites) {
         localStorage.setItem('ceriaFavorites', JSON.stringify(favorites));
     }
-
-    // Render daftar favorit ke dashboard
     function renderFavoritesDashboard() {
         const favorites = getFavorites();
         const container = document.querySelector('#favorit .menu-grid');
@@ -1547,7 +1515,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         container.innerHTML = '';
 
-        // Jika tidak ada favorit
         if (Object.keys(favorites).length === 0) {
             container.innerHTML =
                 `<p style="grid-column: 1/-1; text-align: center; padding: 20px;">
@@ -1556,7 +1523,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Generate card favorit
         for (const id in favorites) {
             const resep = favorites[id];
             const cardHtml = `
@@ -1582,7 +1548,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Toggle tambah / hapus favorit
     function toggleFavorite(id, isDeletion = false) {
         const favorites = getFavorites();
         const icon = document.querySelector(`.favorite-icon[data-resep-id="${id}"]`);
@@ -1608,7 +1573,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateIconVisuals();
     }
 
-    // Update ikon love di halaman resep
     function updateIconVisuals() {
         const favorites = getFavorites();
         document.querySelectorAll('.favorite-icon').forEach(icon => {
@@ -1617,8 +1581,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================= EVENT DELEGATION =================
-    // 1. Klik ikon love di section RESEP
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("favorite-icon")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -1626,7 +1588,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 2. Klik tombol "Hapus" di dashboard
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("delete-fav-btn")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -1634,7 +1595,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 3. Klik tombol "Lihat Resep"
     document.addEventListener("click", function(e) {
         if (e.target.classList.contains("lihat-resep-btn")) {
             const id = e.target.getAttribute("data-resep-id");
@@ -1647,15 +1607,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-
-    // ================= INISIALISASI AWAL =================
     updateIconVisuals();
     renderFavoritesDashboard();
 });
 </script>
 
 
-  <!-- Modal Upload Postingan -->
   <script>
 document.addEventListener("DOMContentLoaded", () => {
   const uploadModal = document.getElementById("uploadModal");

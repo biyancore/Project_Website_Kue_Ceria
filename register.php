@@ -4,17 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ceria Bakery | Daftar Akun</title>
-
-  <!-- FONT & ICONS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Lobster&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- BOOTSTRAP -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-  <!-- STYLE GLOBAL (boleh dipindah ke stylebaru.css) -->
+  
   <style>
     body {
       min-height: 100vh;
@@ -223,7 +219,7 @@
         </div>
       </div>
 
-      <!-- PANEL KANAN: FORM REGISTER -->
+      
       <div class="auth-form-panel">
         <div class="auth-logo">
           <img src="image/ceria.png" alt="Ceria Bakery Logo">
@@ -295,7 +291,6 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Toggle show/hide password
       document.querySelectorAll(".password-toggle").forEach(toggle => {
         toggle.addEventListener("click", () => {
           const targetSelector = toggle.getAttribute("data-target");
@@ -313,7 +308,7 @@
       });
 
       document.addEventListener("DOMContentLoaded", () => {
-  // toggle show/hide password (yang sudah ada)
+ 
   document.querySelectorAll(".password-toggle").forEach(toggle => {
     toggle.addEventListener("click", () => {
       const targetSelector = toggle.getAttribute("data-target");
@@ -330,7 +325,7 @@
     });
   });
 
-  // ====== VALIDASI KONFIRMASI PASSWORD ======
+  
   const registerForm = document.getElementById("registerForm");
   const passInput = document.getElementById("regPassword");
   const confirmInput = document.getElementById("regConfirmPassword");
@@ -338,7 +333,7 @@
   if (registerForm && passInput && confirmInput) {
     registerForm.addEventListener("submit", function(e) {
       if (passInput.value !== confirmInput.value) {
-        e.preventDefault(); // stop submit ke backend
+        e.preventDefault(); 
         alert("Password dan konfirmasi password tidak sama. Silakan cek lagi.");
         confirmInput.focus();
       }

@@ -1,10 +1,10 @@
 <?php
-require 'cek_login.php';
-require 'koneksi.php';
+include 'cek_login.php';
+include 'koneksi.php';
 
 $id_user = $_SESSION['id_user'];
 
-// Ambil data user sekarang
+
 $stmt = $koneksi->prepare("
     SELECT nama_lengkap, username, email, alasan 
     FROM users 
@@ -16,7 +16,7 @@ $stmt->execute();
 $res = $stmt->get_result();
 $user = $res->fetch_assoc();
 
-// PROSES UPDATE
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama     = trim($_POST['nama_lengkap'] ?? '');
     $username = trim($_POST['username'] ?? '');
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nama === '' || $username === '' || $email === '') {
         $error = "Nama, username, dan email wajib diisi.";
     } else {
-        // Cek username/email dipakai user lain
+        
         $cek = $koneksi->prepare("
             SELECT id_user FROM users 
             WHERE (username = ? OR email = ?) AND id_user != ?
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($cekRes->num_rows > 0) {
             $error = "Username atau email sudah digunakan oleh akun lain.";
         } else {
-            // Siapkan query update
+            
             if ($password !== '') {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $upd = $koneksi->prepare("
@@ -59,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($upd->execute()) {
-                // Update juga data di session
                 $_SESSION['nama_lengkap'] = $nama;
                 $_SESSION['username']     = $username;
                 $_SESSION['email']        = $email;
