@@ -1,3 +1,237 @@
+<?php
+// Cek login (ini sudah otomatis session_start di dalamnya)
+require 'cek_login.php';
+
+// Koneksi ke database
+require 'koneksi.php';
+
+// id user yang sedang login
+$id_user = $_SESSION['id_user'];
+
+// --- fungsi upload gambar ---
+function uploadGambar($fieldName, $oldFile = null) {
+    if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] === 4) {
+        return $oldFile; // tidak ada gambar baru
+    }
+
+    $folder = 'uploads/';
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    $namaFile = $_FILES[$fieldName]['name'];
+    $tmpName  = $_FILES[$fieldName]['tmp_name'];
+
+    $ext = pathinfo($namaFile, PATHINFO_EXTENSION);
+    $newName = uniqid('post_', true) . '.' . strtolower($ext);
+
+    move_uploaded_file($tmpName, $folder . $newName);
+
+    // hapus file lama (kalau ada)
+    if ($oldFile && file_exists($folder . $oldFile)) {
+        unlink($folder . $oldFile);
+    }
+
+    return $newName;
+}
+
+// ========== UPDATE PROFIL USER ==========
+if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_profil') {
+    $nama_lengkap  = trim($_POST['nama_lengkap'] ?? '');
+    $username      = trim($_POST['username'] ?? '');
+    $email         = trim($_POST['email'] ?? '');
+    $tanggal_lahir = $_POST['tanggal_lahir'] ?? null;
+    $jenis_kelamin = $_POST['jenis_kelamin'] ?? null;
+    $alasan        = trim($_POST['alasan'] ?? '');
+
+    if ($nama_lengkap === '' || $username === '' || $email === '') {
+        $error_profil = "Nama, username, dan email wajib diisi.";
+    } else {
+        // Cek username / email tidak dipakai user lain
+        $cek = $koneksi->prepare("
+            SELECT id_user FROM users 
+            WHERE (username = ? OR email = ?) AND id_user != ?
+            LIMIT 1
+        ");
+        $cek->bind_param("ssi", $username, $email, $id_user);
+        $cek->execute();
+        $cekRes = $cek->get_result();
+
+        if ($cekRes->num_rows > 0) {
+            $error_profil = "Username atau email sudah digunakan oleh akun lain.";
+        } else {
+            $stmtUpd = $koneksi->prepare("
+                UPDATE users
+                SET nama_lengkap = ?, username = ?, email = ?, tanggal_lahir = ?, jenis_kelamin = ?, alasan = ?
+                WHERE id_user = ?
+            ");
+            $stmtUpd->bind_param(
+                "ssssssi",
+                $nama_lengkap,
+                $username,
+                $email,
+                $tanggal_lahir,
+                $jenis_kelamin,
+                $alasan,
+                $id_user
+            );
+
+            if ($stmtUpd->execute()) {
+                // update session biar nama/username ke-refresh
+                $_SESSION['nama_lengkap'] = $nama_lengkap;
+                $_SESSION['username']     = $username;
+                $_SESSION['email']        = $email;
+
+                header("Location: dashboard.php#profil");
+                exit;
+            } else {
+                $error_profil = "Gagal menyimpan perubahan profil.";
+            }
+        }
+    }
+}
+
+// ========== UPDATE FOTO PROFIL ==========
+if (isset($_POST['aksi_profil']) && $_POST['aksi_profil'] === 'update_foto') {
+
+    $folder = "uploads/profil/";
+    if (!is_dir($folder)) mkdir($folder, 0777, true);
+
+    $foto = $_FILES['foto_profil'];
+    $ext = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
+
+    // buat nama unik
+    $newName = uniqid('profil_', true) . "." . $ext;
+
+    // pindahkan ke uploads/profil/
+    move_uploaded_file($foto['tmp_name'], $folder . $newName);
+
+    // hapus foto lama (jika ada)
+    if (!empty($user['foto_profil']) && file_exists($folder . $user['foto_profil'])) {
+        unlink($folder . $user['foto_profil']);
+    }
+
+    // update db
+    $update = $koneksi->prepare("UPDATE users SET foto_profil=? WHERE id_user=?");
+    $update->bind_param("si", $newName, $id_user);
+    $update->execute();
+
+    header("Location: dashboard.php#profil");
+    exit;
+}
+
+
+// ========== hapus foto ptofile ==========
+if (isset($_GET['hapus_foto'])) {
+    $folder = "uploads/profil/";
+
+    $row = $koneksi->query("SELECT foto_profil FROM users WHERE id_user=$id_user")->fetch_assoc();
+
+    if (!empty($row['foto_profil']) && file_exists($folder . $row['foto_profil'])) {
+        unlink($folder . $row['foto_profil']);
+    }
+
+    $koneksi->query("UPDATE users SET foto_profil=NULL WHERE id_user=$id_user");
+
+    $_SESSION['foto_profil'] = null;
+
+    header("Location: dashboard.php#profil");
+    exit;
+}
+
+
+// ========== CREATE (TAMBAH POSTINGAN) ==========
+if (isset($_POST['aksi']) && $_POST['aksi'] === 'tambah') {
+    $judul  = $_POST['judul'];
+    $isi    = $_POST['isi'];
+    $gambar = uploadGambar('gambar');
+
+    $stmt = $koneksi->prepare(
+        "INSERT INTO komunitas (judul, isi, gambar, id_user) VALUES (?, ?, ?, ?)"
+    );
+    $stmt->bind_param("sssi", $judul, $isi, $gambar, $id_user);
+    $stmt->execute();
+
+    header("Location: dashboard.php#posting"); // sesuaikan dengan nama file kamu
+    exit;
+}
+
+// ========== UPDATE (EDIT POSTINGAN) ==========
+if (isset($_POST['aksi']) && $_POST['aksi'] === 'update') {
+    $id_komunitas = (int)$_POST['id_komunitas'];
+    $judul        = $_POST['judul'];
+    $isi          = $_POST['isi'];
+
+    // ambil gambar lama
+    $res = $koneksi->query("SELECT gambar FROM komunitas WHERE id_komunitas=$id_komunitas AND id_user=$id_user");
+    $row = $res->fetch_assoc();
+    $oldGambar = $row['gambar'] ?? null;
+
+    $gambar = uploadGambar('gambar', $oldGambar);
+
+    $stmt = $koneksi->prepare(
+        "UPDATE komunitas SET judul=?, isi=?, gambar=? WHERE id_komunitas=? AND id_user=?"
+    );
+    $stmt->bind_param("sssii", $judul, $isi, $gambar, $id_komunitas, $id_user);
+    $stmt->execute();
+
+    header("Location: dashboard.php#posting");
+    exit;
+}
+
+// ========== DELETE (HAPUS POSTINGAN) ==========
+if (isset($_GET['hapus'])) {
+    $id_komunitas = (int)$_GET['hapus'];
+
+    // hapus file gambar dulu
+    $res = $koneksi->query("SELECT gambar FROM komunitas WHERE id_komunitas=$id_komunitas AND id_user=$id_user");
+    if ($row = $res->fetch_assoc()) {
+        if ($row['gambar'] && file_exists('uploads/' . $row['gambar'])) {
+            unlink('uploads/' . $row['gambar']);
+        }
+    }
+
+    $koneksi->query("DELETE FROM komunitas WHERE id_komunitas=$id_komunitas AND id_user=$id_user");
+
+    header("Location: dashboard.php#posting");
+    exit;
+}
+
+// ========== READ (AMBIL SEMUA POSTINGAN SAYA) ==========
+$stmt = $koneksi->prepare("
+    SELECT k.*, u.username 
+    FROM komunitas k 
+    LEFT JOIN users u ON k.id_user = u.id_user
+    WHERE k.id_user = ?
+    ORDER BY k.id_komunitas DESC
+");
+$stmt->bind_param("i", $id_user);
+$stmt->execute();
+$posts = $stmt->get_result();
+
+// data untuk MODE EDIT (kalau ada ?edit=)
+$editPost = null;
+if (isset($_GET['edit'])) {
+    $id_edit = (int)$_GET['edit'];
+    $resEdit = $koneksi->query("SELECT * FROM komunitas WHERE id_komunitas=$id_edit AND id_user=$id_user");
+    $editPost = $resEdit->fetch_assoc();
+}
+
+// ========== DATA USER YANG LOGIN ==========
+$userStmt = $koneksi->prepare("
+    SELECT nama_lengkap, username, email, tanggal_lahir, jenis_kelamin, alasan 
+    FROM users 
+    WHERE id_user = ?
+    LIMIT 1
+");
+$userStmt->bind_param("i", $id_user);
+$userStmt->execute();
+$userRes = $userStmt->get_result();
+$user = $userRes->fetch_assoc();
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -561,72 +795,91 @@
   border-color: #8e1913;
   box-shadow: 0 0 0 0.12rem rgba(142, 25, 19, 0.2);
 }
+/* --- CARD KECIL POSTINGAN --- */
 .community-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
 
 .community-card {
   background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  border-radius: 22px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: .2s ease;
+  min-height: auto !important;
 }
+
 
 .community-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.18);
 }
 
-.community-img {
-  width: 100%;
-  height: 150px;
+#posting .community-img {
+  width: 100% !important;
+  height: 150px !important;
   object-fit: cover;
 }
 
+
+/* BODY CARD */
 .community-body {
-  padding: 14px 18px 18px;
+  padding: 14px 16px 18px;
 }
 
 .community-title {
   margin: 0 0 4px;
   font-size: 1rem;
   font-weight: 700;
+  color: #2c3e50;
 }
 
 .community-user {
   margin: 0 0 8px;
-  font-size: 0.85rem;
+  font-size: .85rem;
   color: #d75b63;
 }
 
 .community-caption {
-  margin: 0 0 10px;
-  font-size: 0.85rem;
+  margin: 0 0 12px;
+  font-size: .83rem;
+  color: #333;
   line-height: 1.35;
+  height: 48px;
+  overflow: hidden;
 }
 
 .community-meta {
-  font-size: 0.8rem;
+  font-size: .78rem;
   color: #888;
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
+/* Tombol */
 .community-btn {
   width: 100%;
   border-radius: 30px;
   padding: 8px 0;
-  font-size: 0.9rem;
+  font-size: .9rem;
   font-weight: 600;
   background: linear-gradient(to right, #b79a55, #e3d48c);
 }
+
+/* Override style btn-hero ketika dipakai sebagai tombol card */
+#posting .community-btn.btn-hero {
+  margin-top: 0 !important;
+  padding: 8px 0 !important;
+  font-size: 0.9rem !important;
+  box-shadow: none;
+}
+
 
 
 
@@ -722,301 +975,431 @@ footer .social-icons a:hover {
 </nav>
 
 <!-- ================= DASHBOARD MEMBER ================= -->
- <section id="dashboard" class="dashboard-section">
-    <div class="featured-title"><h2>Dashboard Member</h2></div>
-    <div class="dashboard-container">
+<section id="dashboard" class="dashboard-section">
+  <div class="featured-title"><h2>Dashboard Member</h2></div>
+  <div class="dashboard-container">
 
-      <!-- Tabs -->
-      <div class="dashboard-tabs">
-        <button class="tab-btn active" data-tab="profil">Profil Saya</button>
-        <button class="tab-btn" data-tab="posting">Postingan Saya</button>
-        <button class="tab-btn" data-tab="favorit">Resep Favorit</button>
-        <button class="tab-btn link-underline-light" data-tab="logout">Log out</button>
-      </div>
-
-      <div class="dashboard-content">
-<!-- PROFIL (LAYOUT BARU) -->
-<div class="tab-content active" id="profil">
-  <div class="profile-settings">
-
-    <!-- Header judul + tombol edit -->
-    <div class="profile-header-line">
-      <div>
-        <h3 class="profile-title">Pengaturan Akun</h3>
-        <p class="profile-subtitle">
-          Kelola informasi dasar dan akun Ceria Bakery kamu.
-        </p>
-      </div>
-      <button class="btn-hero edit-btn" id="editProfilBtn" type="button">
-        Edit Profil
-      </button>
+    <!-- Tabs -->
+    <div class="dashboard-tabs">
+      <button class="tab-btn active" data-tab="profil">Profil Saya</button>
+      <button class="tab-btn" data-tab="posting">Postingan Saya</button>
+      <button class="tab-btn" data-tab="favorit">Resep Favorit</button>
+      <button class="tab-btn link-underline-light" data-tab="logout">Log out</button>
     </div>
 
-    <!-- BASIC INFO -->
-    <div class="profile-section">
-      <h4 class="profile-section-heading">Basic info</h4>
+    <!-- ==== KONTEN TIAP TAB ==== -->
+    <div class="dashboard-content">
 
-      <!-- Foto profil -->
-      <div class="profile-basic-layout">
-        <div class="profile-avatar-wrapper">
-          <img src="image/mitsuri.jpg" alt="Foto Profil" class="profil-img">
-          <span class="avatar-icon">
-            <i class="fa-solid fa-camera"></i>
-          </span>
-        </div>
-        <div class="profile-avatar-text">
-          <p class="avatar-label">Foto Profil</p>
-          <p class="avatar-actions">
-            <a href="#" class="avatar-upload-link">Upload foto baru</a>
-            <span>·</span>
-            <a href="#" class="avatar-remove-link">Hapus</a>
-          </p>
-          <p class="avatar-note">Format JPG/PNG, maks. 2MB.</p>
-        </div>
-      </div>
+      <!-- ========== TAB PROFIL ========== -->
+      <div class="tab-content active" id="profil">
+        <div class="profile-settings">
 
-      <!-- Baris data basic info -->
-      <div class="profile-rows">
-        <div class="profile-row">
-          <span class="profile-row-label">Nama</span>
-          <span class="profile-row-value">Rina Bakes</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-
-        <div class="profile-row">
-          <span class="profile-row-label">Tanggal Lahir</span>
-          <span class="profile-row-value">24 Desember 1998</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-
-        <div class="profile-row">
-          <span class="profile-row-label">Jenis Kelamin</span>
-          <span class="profile-row-value">Perempuan</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-
-        <div class="profile-row">
-          <span class="profile-row-label">Email</span>
-          <span class="profile-row-value">rina@example.com</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ACCOUNT INFO -->
-    <div class="profile-section">
-      <h4 class="profile-section-heading">Account info</h4>
-
-      <div class="profile-rows">
-        <div class="profile-row">
-          <span class="profile-row-label">Username</span>
-          <span class="profile-row-value">@rina_bakes</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-
-        <div class="profile-row">
-          <span class="profile-row-label">Password</span>
-          <span class="profile-row-value">********</span>
-          <span class="profile-row-cta">
-            <i class="fa-solid fa-chevron-right"></i>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- FORM EDIT (dipakai script lama, cuma styling baru) -->
-    <form id="editProfilForm" class="form-box">
-      <h3>Edit Profil</h3>
-      <input type="text" placeholder="Nama Lengkap" value="Rina Bakes">
-      <input type="text" placeholder="Username" value="@rina_bakes">
-      <input type="email" placeholder="Email" value="rina@example.com">
-      <input type="date" placeholder="Tanggal Lahir">
-      <select>
-        <option value="">Pilih jenis kelamin</option>
-        <option>Perempuan</option>
-        <option>Laki-laki</option>
-        <option>Lainnya</option>
-      </select>
-      <textarea rows="3" placeholder="Bio">Pecinta kue cokelat dan buttercream pastel 💕</textarea>
-      <input type="text" placeholder="Kue Favorit" value="Red Velvet">
-      <button type="submit" class="btn-hero">Simpan Perubahan</button>
-    </form>
-
-  </div>
-</div>
-
-
-<!-- POSTINGAN SAYA (DASHBOARD) -->
-<div class="tab-content" id="posting">
-      <div>
-        <h3 class="profile-title">Postingan Saya</h3>
-        <p class="profile-subtitle">
-          Semua resep dan cerita baking yang sudah kamu upload akan muncul di sini. Kalau kamu tambah postingan baru, card-nya akan otomatis bertambah.
-          <br><br>
-        </p>
-      </div>
-
-  <!-- Grid postingan saya (nanti di-loop dari database) -->
-  <div class="community-grid" id="postingSayaList">
-
-    <!-- Contoh card 1 -->
-    <article class="community-card">
-      <img src="image/browniespandan.jpg" alt="Brownies Pandan" class="community-img">
-      <div class="community-body">
-        <h5 class="community-title">Brownies Pandan Super Moist</h5>
-        <p class="community-user">@rina_bakes • Brownies</p>
-        <p class="community-caption">
-          Cobain resep brownies pandan ini, teksturnya lembut dan super moist! 😍
-        </p>
-        <div class="community-meta">
-          <span>❤️ 120 suka</span>
-          <span>•</span>
-          <span>2 jam lalu</span>
-        </div>
-        <button class="btn-hero community-btn">Lihat Postingan</button>
-      </div>
-    </article>
-
-    <!-- Contoh card 2 -->
-    <article class="community-card">
-      <img src="image/tart.jpeg" alt="Tart Pastel" class="community-img">
-      <div class="community-body">
-        <h5 class="community-title">Tart Pastel Ulang Tahun</h5>
-        <p class="community-user">@cindy_cake • Cake Tart</p>
-        <p class="community-caption">
-          Tart buttercream warna pastel untuk ulang tahun adikku 🎂💗
-        </p>
-        <div class="community-meta">
-          <span>❤️ 89 suka</span>
-          <span>•</span>
-          <span>kemarin</span>
-        </div>
-        <button class="btn-hero community-btn">Lihat Postingan</button>
-      </div>
-    </article>
-
-    <!-- Contoh card 3 -->
-    <article class="community-card">
-      <img src="image/reseplembut.jpg" alt="Roti Lembut" class="community-img">
-      <div class="community-body">
-        <h5 class="community-title">Roti Susu Super Lembut</h5>
-        <p class="community-user">@andi_kitchen • Roti</p>
-        <p class="community-caption">
-          Sharing tips biar roti lembut tapi nggak bantet, cocok buat sarapan. 🥐
-        </p>
-        <div class="community-meta">
-          <span>❤️ 53 suka</span>
-          <span>•</span>
-          <span>3 hari lalu</span>
-        </div>
-        <button class="btn-hero community-btn">Lihat Postingan</button>
-      </div>
-    </article>
-
-    <!-- Contoh card 4 -->
-    <article class="community-card">
-      <img src="image/cupcake.jpeg" alt="Cupcake Pastel" class="community-img">
-      <div class="community-body">
-        <h5 class="community-title">Cupcake Vanilla Pastel</h5>
-        <p class="community-user">@sweetcup • Cupcake</p>
-        <p class="community-caption">
-          Set cupcake pastel untuk gift box temen kantor, simple tapi cantik 💕
-        </p>
-        <div class="community-meta">
-          <span>❤️ 34 suka</span>
-          <span>•</span>
-          <span>1 minggu lalu</span>
-        </div>
-        <button class="btn-hero community-btn">Lihat Postingan</button>
-      </div>
-    </article>
-
-    <!-- NANTI: postingan baru tinggal ditambah/di-loop di sini -->
-    <!-- Contoh loop PHP / backend -->
-    <!--
-    <?php foreach ($myPosts as $post): ?>
-      <article class="community-card">
-        <?php if (!empty($post['gambar'])): ?>
-          <img src="<?= htmlspecialchars($post['gambar']) ?>"
-               alt="<?= htmlspecialchars($post['judul']) ?>"
-               class="community-img">
-        <?php endif; ?>
-        <div class="community-body">
-          <h5 class="community-title">
-            <?= htmlspecialchars($post['judul']) ?>
-          </h5>
-          <p class="community-user">
-            @<?= htmlspecialchars($post['username']) ?> •
-            <?= htmlspecialchars($post['kategori']) ?>
-          </p>
-          <p class="community-caption">
-            <?= htmlspecialchars($post['caption']) ?>
-          </p>
-          <div class="community-meta">
-            <span>❤️ <?= (int)$post['likes'] ?> suka</span>
-            <span>•</span>
-            <span><?= htmlspecialchars($post['waktu_relative']) ?></span>
+          <!-- Header judul + tombol edit -->
+          <div class="profile-header-line">
+            <div>
+              <h3 class="profile-title">Pengaturan Akun</h3>
+              <p class="profile-subtitle">
+                Kelola informasi dasar dan akun Ceria Bakery kamu.
+              </p>
+            </div>
+            <button class="btn-hero edit-btn" id="editProfilBtn" type="button">
+              Edit Profil
+            </button>
           </div>
-          <button class="btn-hero community-btn"
-                  data-id="<?= (int)$post['id'] ?>">
-            Lihat Postingan
+
+          <!-- BASIC INFO -->
+          <div class="profile-section">
+            <h4 class="profile-section-heading">Basic info</h4>
+
+            <!-- Foto profil -->
+            <div class="profile-basic-layout">
+              <div class="profile-avatar-wrapper">
+                <?php
+                  $fotoProfil = !empty($user['foto_profil'])
+                    ? 'uploads/profil/' . htmlspecialchars($user['foto_profil'], ENT_QUOTES, 'UTF-8')
+                    : 'image/default-avatar.jpg';
+                ?>
+                <img
+                  src="<?= $fotoProfil; ?>"
+                  alt="Foto Profil"
+                  class="profil-img"
+                >
+                <span class="avatar-icon">
+                  <i class="fa-solid fa-camera"></i>
+                </span>
+              </div>
+
+              <div class="profile-avatar-text">
+                <p class="avatar-label">Foto Profil</p>
+                <p class="avatar-actions">
+                  <a href="#" class="avatar-upload-link">Upload foto baru</a>
+                  <span>·</span>
+                  <a href="dashboard.php?hapus_foto=1" class="avatar-remove-link">Hapus</a>
+                </p>
+                <p class="avatar-note">Format JPG/PNG, maks. 2MB.</p>
+              </div>
+            </div>
+
+            <!-- Form upload foto (hidden input + auto submit) -->
+            <form
+              id="uploadFotoForm"
+              method="post"
+              enctype="multipart/form-data"
+              action="dashboard.php#profil"
+              style="margin-top:10px;"
+            >
+              <input
+                type="file"
+                id="inputFotoProfil"
+                name="foto_profil"
+                accept="image/*"
+                style="display:none;"
+              >
+              <input type="hidden" name="aksi_profil" value="update_foto">
+            </form>
+
+            <!-- Baris data basic info -->
+            <div class="profile-rows">
+              <div class="profile-row">
+                <span class="profile-row-label">Nama</span>
+                <span class="profile-row-value">
+                  <?= htmlspecialchars($user['nama_lengkap'] ?? '-'); ?>
+                </span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+
+              <div class="profile-row">
+                <span class="profile-row-label">Tanggal Lahir</span>
+                <span class="profile-row-value">
+                  <?= !empty($user['tanggal_lahir']) 
+                        ? date('d F Y', strtotime($user['tanggal_lahir'])) 
+                        : '-'; ?>
+                </span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+
+              <div class="profile-row">
+                <span class="profile-row-label">Jenis Kelamin</span>
+                <span class="profile-row-value">
+                  <?= htmlspecialchars($user['jenis_kelamin'] ?? '-'); ?>
+                </span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+
+              <div class="profile-row">
+                <span class="profile-row-label">Email</span>
+                <span class="profile-row-value">
+                  <?= htmlspecialchars($user['email'] ?? '-'); ?>
+                </span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACCOUNT INFO -->
+          <div class="profile-section">
+            <h4 class="profile-section-heading">Account info</h4>
+
+            <div class="profile-rows">
+              <div class="profile-row">
+                <span class="profile-row-label">Username</span>
+                <span class="profile-row-value">
+                  @<?= htmlspecialchars($user['username'] ?? 'member'); ?>
+                </span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+
+              <div class="profile-row">
+                <span class="profile-row-label">Password</span>
+                <span class="profile-row-value">********</span>
+                <span class="profile-row-cta">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- FORM EDIT PROFIL -->
+          <form id="editProfilForm" class="form-box" method="post" action="#profil">
+            <h3>Edit Profil</h3>
+
+            <?php if (!empty($error_profil)): ?>
+              <p style="color:#c0392b; font-size:0.85rem; margin-bottom:8px;">
+                <?= htmlspecialchars($error_profil); ?>
+              </p>
+            <?php endif; ?>
+
+            <input type="hidden" name="aksi_profil" value="update_profil">
+
+            <input
+              type="text"
+              name="nama_lengkap"
+              placeholder="Nama Lengkap"
+              value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>"
+              required
+            >
+
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value="<?= htmlspecialchars($user['username'] ?? ''); ?>"
+              required
+            >
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value="<?= htmlspecialchars($user['email'] ?? ''); ?>"
+              required
+            >
+
+            <label style="font-size:0.8rem; margin-top:4px;">Tanggal Lahir</label>
+            <input
+              type="date"
+              name="tanggal_lahir"
+              value="<?= !empty($user['tanggal_lahir']) ? htmlspecialchars($user['tanggal_lahir']) : ''; ?>"
+            >
+
+            <label style="font-size:0.8rem; margin-top:4px;">Jenis Kelamin</label>
+            <select name="jenis_kelamin">
+              <option value="">Pilih jenis kelamin</option>
+              <option value="Perempuan" <?= (isset($user['jenis_kelamin']) && $user['jenis_kelamin'] === 'Perempuan') ? 'selected' : ''; ?>>
+                Perempuan
+              </option>
+              <option value="Laki-laki" <?= (isset($user['jenis_kelamin']) && $user['jenis_kelamin'] === 'Laki-laki') ? 'selected' : ''; ?>>
+                Laki-laki
+              </option>
+              <option value="Lainnya" <?= (isset($user['jenis_kelamin']) && $user['jenis_kelamin'] === 'Lainnya') ? 'selected' : ''; ?>>
+                Lainnya
+              </option>
+            </select>
+
+            <textarea
+              rows="3"
+              name="alasan"
+              placeholder="Bio / alasan join komunitas"
+            ><?= htmlspecialchars($user['alasan'] ?? ''); ?></textarea>
+
+            <button type="submit" class="btn-hero">Simpan Perubahan</button>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- ========== TAB POSTINGAN SAYA ========== -->
+      <div class="tab-content" id="posting">
+        <div>
+          <h3 class="profile-title">Postingan Saya</h3>
+          <p class="profile-subtitle">
+            Semua resep dan cerita baking yang sudah kamu upload akan muncul di sini. Kalau kamu tambah postingan baru, card-nya akan otomatis bertambah.
+            <br><br>
+          </p>
+        </div>
+
+        <div class="community-grid" id="postingSayaList">
+          <?php if ($posts->num_rows > 0): ?>
+            <?php while ($post = $posts->fetch_assoc()): ?>
+              <?php
+                $gambarSrc = !empty($post['gambar'])
+                  ? 'uploads/' . htmlspecialchars($post['gambar'])
+                  : 'image/reseplembut.jpg';
+              ?>
+              <article class="community-card">
+                <img
+                  src="<?= $gambarSrc; ?>"
+                  alt="<?= htmlspecialchars($post['judul']); ?> @<?= htmlspecialchars($post['username'] ?? 'member'); ?>"
+                  class="community-img"
+                >
+                <div class="community-body">
+                  <h5 class="community-title">
+                    <?= htmlspecialchars($post['judul']); ?>
+                  </h5>
+
+                  <p class="community-user">
+                    @<?= htmlspecialchars($post['username'] ?? 'member'); ?> • Komunitas
+                  </p>
+
+                  <p class="community-caption">
+                    <?= nl2br(htmlspecialchars($post['isi'])); ?>
+                  </p>
+
+                  <div class="community-meta">
+                    <span>❤️ 0 suka</span>
+                    <span>•</span>
+                    <span>baru saja</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-hero community-btn lihat-post-btn"
+                    data-gambar="<?= $gambarSrc; ?>"
+                    data-judul="<?= htmlspecialchars($post['judul']); ?>"
+                    data-user="@<?= htmlspecialchars($post['username'] ?? 'member'); ?> • Komunitas"
+                    data-isi="<?= nl2br(htmlspecialchars($post['isi'], ENT_QUOTES)); ?>"
+                  >
+                    Lihat Postingan
+                  </button>
+
+                  <div style="display:flex; gap:8px; margin-top:10px;">
+                    <a href="dashboard.php?edit=<?= (int)$post['id_komunitas']; ?>#posting"
+                       class="btn-hero community-btn"
+                       style="flex:1; text-align:center;">
+                      Edit
+                    </a>
+
+                    <a href="dashboard.php?hapus=<?= (int)$post['id_komunitas']; ?>#posting"
+                       class="btn-hero community-btn"
+                       style="flex:1; text-align:center; background:linear-gradient(to right,#c0392b,#e74c3c);"
+                       onclick="return confirm('Yakin ingin menghapus postingan ini?');">
+                      Hapus
+                    </a>
+                  </div>
+                </div>
+              </article>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <p style="grid-column:1/-1; text-align:center; padding:20px;">
+              Belum ada postingan. Yuk buat postingan pertama kamu! ✨
+            </p>
+          <?php endif; ?>
+        </div>
+
+        <div style="text-align:center; margin-top:25px;">
+          <button id="tambahPostBtn" class="btn-hero" style="max-width:260px; font-size:16px;">
+            Tambah Postingan Baru
           </button>
         </div>
-      </article>
-    <?php endforeach; ?>
-    -->
-  </div>
+      </div>
 
-  <div style="text-align:center; margin-top:25px;">
-    <button id="tambahPostBtn" class="btn-hero" style="max-width:260px;">
-      Tambah Postingan Baru
-    </button>
+      <!-- ========== TAB RESEP FAVORIT ========== -->
+      <div class="tab-content" id="favorit">
+        <div>
+          <h3 class="profile-title">Resep Favorit Saya</h3>
+          <p class="profile-subtitle">
+            Semua resep kamu simpan akan muncul di sini. 
+          </p>
+          <br>
+        </div>
+
+        <div class="menu-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
+          <!-- JS renderFavoritesDashboard() akan mengisi kartu di sini -->
+        </div>
+      </div>
+
+      <!-- ========== TAB LOGOUT (OPTIONAL) ========== -->
+      <div class="tab-content" id="logout">
+        <h3 class="profile-title">Keluar Akun</h3>
+        <p class="profile-subtitle">
+          Klik tombol di bawah ini untuk keluar dari akun Ceria Bakery.
+        </p>
+        <br>
+        <a href="logout.php" class="btn-hero">Log out</a>
+      </div>
+
+    </div> <!-- end .dashboard-content -->
+  </div>   <!-- end .dashboard-container -->
+</section>
+
+<!-- ================= MODAL UPLOAD POSTINGAN ================= -->
+<div id="uploadModal" class="auth-modal">
+  <div class="auth-content" style="max-width:430px;">
+    <span class="close-btn">&times;</span>
+
+    <!-- form dipakai untuk TAMBAH & EDIT -->
+    <form id="uploadForm"
+          class="form-box active"
+          method="post"
+          enctype="multipart/form-data"
+          action="#posting">
+
+      <h2 style="text-align:center; margin-bottom:15px;">
+        <?= $editPost ? 'Edit Postingan' : 'Tambah Postingan Baru'; ?>
+      </h2>
+
+      <input type="hidden" name="aksi" value="<?= $editPost ? 'update' : 'tambah'; ?>">
+
+      <?php if ($editPost): ?>
+        <input type="hidden" name="id_komunitas"
+               value="<?= (int)$editPost['id_komunitas']; ?>">
+      <?php endif; ?>
+
+      <input type="text"
+             name="judul"
+             placeholder="Judul Postingan"
+             required
+             value="<?= $editPost ? htmlspecialchars($editPost['judul']) : ''; ?>">
+
+      <textarea name="isi"
+                placeholder="Cerita / deskripsi postingan kamu"
+                rows="5"
+                required><?= $editPost ? htmlspecialchars($editPost['isi']) : ''; ?></textarea>
+
+      <input type="file" name="gambar" accept="image/*">
+
+      <?php if ($editPost && !empty($editPost['gambar'])): ?>
+        <p style="font-size:0.8rem; margin-top:8px;">
+          Gambar saat ini:
+          <strong><?= htmlspecialchars($editPost['gambar']); ?></strong>
+        </p>
+      <?php endif; ?>
+
+      <button type="submit" class="btn-hero" style="margin-top:15px;">
+        <?= $editPost ? 'Update Postingan' : 'Upload'; ?>
+      </button>
+    </form>
   </div>
 </div>
 
+<!-- ================= MODAL LIHAT POSTINGAN ================= -->
+<div id="viewPostModal" class="auth-modal">
+  <div class="auth-content" style="max-width:460px; padding:22px 22px 26px;">
+    <span class="close-btn close-view-post">&times;</span>
 
+    <!-- Card postingan di dalam modal -->
+    <article class="community-card" style="margin-bottom:0;">
+      <img id="viewPostImage"
+           src=""
+           alt="Detail Postingan"
+           class="community-img"
+           style="width:100%; height:200px; object-fit:cover;">
 
-        <!-- RESEP FAVORIT -->
-        <div class="tab-content" id="favorit">
-           <div>
-        <h3 class="profile-title">Resep Favorit Saya</h3>
-        <p class="profile-subtitle">
-          Semua resep kamu simpan akan muncul di sini. 
+      <div class="community-body">
+        <h5 id="viewPostTitle" class="community-title">
+          <!-- judul diisi via JS -->
+        </h5>
+
+        <p id="viewPostUser" class="community-user">
+          <!-- @username • Komunitas -->
         </p>
-        <br>
-      </div>
-          <div class="menu-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
-          </div>
+
+        <p id="viewPostIsi"
+           class="community-caption"
+           style="height:auto; max-height:none; margin-bottom:10px;">
+          <!-- isi postingan -->
+        </p>
+
+        <div class="community-meta">
+          <span>❤️ 0 suka</span>
+          <span>•</span>
+          <span>baru saja</span>
         </div>
-
       </div>
-    </div>
-  </section>
-  
-
-    <!-- ================= MODAL UPLOAD POSTINGAN ================= -->
-  <div id="uploadModal" class="auth-modal">
-    <div class="auth-content">
-      <span class="close-btn">&times;</span>
-      <form id="uploadForm" class="form-box active">
-        <h2>Tambah Postingan Baru</h2>
-        <input type="text" placeholder="Judul Postingan" required>
-        <textarea placeholder="Isi Postingan" rows="5" required></textarea>
-        <input type="file" accept="image/*">
-        <button type="submit" class="btn-hero">Upload</button>
-      </form>
-    </div>
+    </article>
   </div>
+</div>
+
 
   <!-- ================= FOOTER ================= -->
   <footer>
@@ -1078,183 +1461,100 @@ window.addEventListener("scroll", () => {
 </script>
 
 
-  <!-- Carousel -->
- <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        let slideIndex = 0;
-        const slides = document.querySelectorAll(".carousel-slide");
-        const prevBtn = document.querySelector(".prev");
-        const nextBtn = document.querySelector(".next");
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadLink = document.querySelector(".avatar-upload-link");
+  const inputFoto  = document.getElementById("inputFotoProfil");
+  const uploadForm = document.getElementById("uploadFotoForm");
 
-        // Fungsi yang hanya bertugas mengaktifkan slide yang benar
-        function showSlide(i) {
-            slides.forEach(s => { 
-                s.classList.remove("active"); 
-            });
-            slides[i].classList.add("active");
-            
-            // Atur ulang posisi slide agar hanya yang aktif yang menjadi 'relative'
-            slides.forEach((s, index) => {
-                if (index === i) {
-                    s.style.position = 'relative';
-                } else {
-                    s.style.position = 'absolute';
-                }
-            });
-        }
-
-        function changeSlide(n) {
-            slideIndex = (slideIndex + n + slides.length) % slides.length;
-            showSlide(slideIndex);
-        }
-
-        // Tampilkan slide pertama saat inisialisasi
-        if (slides.length > 0) {
-            showSlide(slideIndex); 
-            
-            // Tambahkan event listener untuk tombol navigasi
-            prevBtn.addEventListener("click", () => changeSlide(-1));
-            nextBtn.addEventListener("click", () => changeSlide(1));
-
-            // Auto-play (geser otomatis)
-            setInterval(() => changeSlide(1), 5000); 
-        }
+  if (uploadLink && inputFoto && uploadForm) {
+    // Klik teks "Upload foto baru" => buka file picker
+    uploadLink.addEventListener("click", function(e) {
+      e.preventDefault();
+      inputFoto.click();
     });
+
+    // Begitu user pilih file => form auto-submit
+    inputFoto.addEventListener("change", function() {
+      if (inputFoto.files.length > 0) {
+        uploadForm.submit();
+      }
+    });
+  }
+});
 </script>
 
-  <!-- Modal Auth -->
-  <script>
-   document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("authModal");
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    const closeBtn = document.querySelector(".close-btn");
-    const userIcon = document.getElementById("userIcon");
-    const loginSubmitBtn = document.getElementById("loginSubmitBtn"); 
-    const dashboardSection = document.getElementById("dashboard");
 
 
-    // --- SIMULASI STATUS LOGIN ---
-    let isLoggedIn = false; // Status awal: belum login
-    // ----------------------------
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const viewModal   = document.getElementById("viewPostModal");
+  const imgEl       = document.getElementById("viewPostImage");
+  const titleEl     = document.getElementById("viewPostTitle");
+  const userEl      = document.getElementById("viewPostUser");
+  const isiEl       = document.getElementById("viewPostIsi");
+  const closeView   = document.querySelector(".close-view-post");
 
-    // Fungsi untuk menampilkan modal atau navigasi
-    function handleUserIconClick(e) {
-        e.preventDefault();
-        
-        if (isLoggedIn) {
-            // JIKA SUDAH LOGIN: Gulir ke Dashboard
-            if (dashboardSection) {
-                // Gunakan scrollIntoView untuk navigasi smooth
-                dashboardSection.scrollIntoView({ behavior: 'smooth' });
-                // Tambahkan class 'active' ke nav-link dashboard jika ada
-                document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
-                document.querySelector('a[href="#dashboard"]') ? document.querySelector('a[href="#dashboard"]').classList.add("active") : null;
-            }
-        } else {
-            // JIKA BELUM LOGIN: Tampilkan Modal Login
-            modal.style.display = "flex";
-            loginForm.classList.add("active");
-            registerForm.classList.remove("active");
-        }
+  // Delegasi click ke tombol "Lihat Postingan"
+  document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("lihat-post-btn")) {
+      const btn = e.target;
+
+      const gambar = btn.getAttribute("data-gambar") || "";
+      const judul  = btn.getAttribute("data-judul") || "";
+      const user   = btn.getAttribute("data-user") || "";
+      const isi    = btn.getAttribute("data-isi") || "";
+
+      if (imgEl)   imgEl.src = gambar;
+      if (titleEl) titleEl.textContent = judul;
+      if (userEl)  userEl.textContent  = user;
+      if (isiEl)   isiEl.innerHTML     = isi; // sudah di-escape dari PHP
+
+      if (viewModal) viewModal.style.display = "flex";
     }
+  });
 
-    // Pasang fungsi ke ikon profil
-    userIcon.addEventListener("click", handleUserIconClick);
+  // Tutup modal
+  if (closeView) {
+    closeView.addEventListener("click", () => {
+      viewModal.style.display = "none";
+    });
+  }
 
-    // --- LOGIC LOGIN/SUBMIT SIMULASI ---
-    if (loginSubmitBtn) {
-        loginForm.addEventListener("submit", function(e) {
-            e.preventDefault(); // Mencegah form refresh halaman
-            
-            // Lakukan validasi/kirim data (INI HANYA SIMULASI BERHASIL)
-            
-            // 1. Ubah status login
-            isLoggedIn = true;
-            
-            // 2. Tutup Modal
-            modal.style.display = "none";
-            
-            // 3. (Opsional) Langsung gulir ke dashboard
-            // dashboardSection.scrollIntoView({ behavior: 'smooth' }); 
-            
-            alert("Login Berhasil! Ikon profil sekarang mengarah ke Dashboard.");
-            
-            // Di sini Anda bisa mengubah ikon profil menjadi ikon "logged-in" jika mau
-        });
+  window.addEventListener("click", (e) => {
+    if (e.target === viewModal) {
+      viewModal.style.display = "none";
     }
-
-    // LOGIC LAIN UNTUK MODAL
-    closeBtn.addEventListener("click", () => modal.style.display = "none");
-    window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
-
-    // Switch antara Login dan Register
-    const showRegister = document.getElementById("showRegister");
-    const showLogin = document.getElementById("showLogin");
-
-    if (showRegister) showRegister.addEventListener("click", e => {
-        e.preventDefault();
-        loginForm.classList.remove("active");
-        registerForm.classList.add("active");
-    });
-
-    if (showLogin) showLogin.addEventListener("click", e => {
-        e.preventDefault();
-        registerForm.classList.remove("active");
-        loginForm.classList.add("active");
-    });
+  });
 });
+</script>
 
-    //   if (!modal || !userIcon || !closeBtn) return;
-
-    //   userIcon.addEventListener("click", e => {
-    //     e.preventDefault();
-    //     modal.style.display = "flex";
-    //     loginForm.classList.add("active");
-    //     registerForm.classList.remove("active");
-    //   });
-
-    //   closeBtn.addEventListener("click", () => modal.style.display = "none");
-    //   window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
-
-    //   if (showRegister) showRegister.addEventListener("click", e => {
-    //     e.preventDefault();
-    //     loginForm.classList.remove("active");
-    //     registerForm.classList.add("active");
-    //   });
-
-    //   if (showLogin) showLogin.addEventListener("click", e => {
-    //     e.preventDefault();
-    //     registerForm.classList.remove("active");
-    //     loginForm.classList.add("active");
-    //   });
-    // });
-  </script>
 
   <!-- Dashboard Tabs & Edit Profil -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const tabBtns = document.querySelectorAll(".tab-btn");
-      const tabContents = document.querySelectorAll(".tab-content");
-      const editBtn = document.getElementById("editProfilBtn");
-      const editForm = document.getElementById("editProfilForm");
+document.addEventListener("DOMContentLoaded", () => {
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const editBtn = document.getElementById("editProfilBtn");
+  const editForm = document.getElementById("editProfilForm");
 
-      tabBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-          tabBtns.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          tabContents.forEach(c => c.classList.remove("active"));
-          document.getElementById(btn.dataset.tab).classList.add("active");
-        });
-      });
-
-      if (editBtn && editForm) {
-        editBtn.addEventListener("click", () => {
-          const formVisible = editForm.style.display === "flex";
-          editForm.style.display = formVisible ? "none" : "flex";
-        });
-      }
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tabBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      tabContents.forEach(c => c.classList.remove("active"));
+      document.getElementById(btn.dataset.tab).classList.add("active");
     });
+  });
+
+  if (editBtn && editForm) {
+    editBtn.addEventListener("click", () => {
+      const formVisible = editForm.style.display === "flex";
+      editForm.style.display = formVisible ? "none" : "flex";
+    });
+  }
+});
+
   </script>
 
 
@@ -1401,21 +1701,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <!-- Modal Upload Postingan -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const uploadModal = document.getElementById("uploadModal");
-      const tambahPostBtn = document.getElementById("tambahPostBtn");
-      const closeBtn = uploadModal.querySelector(".close-btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadModal = document.getElementById("uploadModal");
+  const tambahPostBtn = document.getElementById("tambahPostBtn");
+  const closeBtn = uploadModal.querySelector(".close-btn");
 
-      tambahPostBtn.addEventListener("click", () => uploadModal.style.display = "flex");
-      closeBtn.addEventListener("click", () => uploadModal.style.display = "none");
-      window.addEventListener("click", e => { if (e.target === uploadModal) uploadModal.style.display = "none"; });
+  if (tambahPostBtn) {
+    tambahPostBtn.addEventListener("click", () => uploadModal.style.display = "flex");
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => uploadModal.style.display = "none");
+  }
 
-      // Dummy edit & delete alert
-      document.querySelectorAll(".editBtn").forEach(btn => btn.addEventListener("click", () => alert("Fungsi edit nanti akan terhubung ke backend.")));
-      document.querySelectorAll(".deleteBtn").forEach(btn => btn.addEventListener("click", () => alert("Fungsi delete nanti akan terhubung ke backend.")));
-    });
+  window.addEventListener("click", e => { 
+    if (e.target === uploadModal) uploadModal.style.display = "none"; 
+  });
+});
   </script>
 
+<?php if ($editPost): ?>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const uploadModal = document.getElementById("uploadModal");
+    if (uploadModal) uploadModal.style.display = "flex";
+  });
+</script>
+<?php endif; ?>
 
 
 

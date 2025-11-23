@@ -29,7 +29,7 @@ body{margin:0;padding:0;background:#fff9b4;font-family:"Poppins",sans-serif;}
   </div>
 
   <div class="recipe-main">
-    <img src="../image/cheesecakepanggang.jpeg" alt="Cheesecake Panggang">
+    <img src="../image/cheesecakepanggang.jpg" alt="Cheesecake Panggang">
 
     <div class="recipe-content">
       <h3>Bahan:</h3>

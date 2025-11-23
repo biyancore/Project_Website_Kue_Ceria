@@ -325,7 +325,7 @@
     </div>
 
     <div style="text-align:center; margin-top:25px;">
-      <a href="#" class="btn-hero" style="max-width:260px;">Lihat Semua Postingan</a>
+      <a href="dashboard.php" class="btn-hero" style="max-width:260px; text-size:16px;">Lihat Postingan Saya</a>
     </div>
   </div>
 </section>
@@ -521,132 +521,147 @@
     });
   </script>
 
-  <!-- Favorit Resep (localStorage) -->
-  <script>
-    // Link halaman resep (dipakai saat klik "Lihat Resep")
-    const resepLinks = {
-      coklatlumer: "resep/resep-coklatlumer.php",
-      bolupandan: "resep/resep-bolupandan.php",
-      cheesecakepanggang: "resep/resep-cheesecake.php"
-    };
+<script>
+// =============== LINK HALAMAN RESEP (GLOBAL) ===============
+const resepLinks = {
+    coklatlumer: "resep/resep-coklatlumer.php",
+    bolupandan: "resep/resep-bolupandan.php",
+    cheesecakepanggang: "resep/resep-cheesecake.php"
+};
 
-    // Ambil data favorit dari localStorage
+document.addEventListener("DOMContentLoaded", () => {
+
+    // --- FUNGSI UTAMA ---
+
+    // Ambil data favorit dari LocalStorage
     function getFavorites() {
-      const favorites = localStorage.getItem("ceriaFavorites");
-      return favorites ? JSON.parse(favorites) : {};
+        const favorites = localStorage.getItem('ceriaFavorites');
+        return favorites ? JSON.parse(favorites) : {};
     }
 
-    // Simpan data favorit ke localStorage
+    // Simpan data favorit
     function saveFavorites(favorites) {
-      localStorage.setItem("ceriaFavorites", JSON.stringify(favorites));
+        localStorage.setItem('ceriaFavorites', JSON.stringify(favorites));
     }
 
-    // Render daftar favorit di dashboard (#favorit .menu-grid)
+    // Render daftar favorit ke dashboard (tab #favorit)
     function renderFavoritesDashboard() {
-      const favorites = getFavorites();
-      const container = document.querySelector("#favorit .menu-grid");
-      if (!container) return; // Kalau bukan di dashboard.php, langsung keluar
+        const favorites = getFavorites();
+        const container = document.querySelector('#favorit .menu-grid');
 
-      container.innerHTML = "";
+        // Kalau elemen #favorit nggak ada (misalnya di index), langsung keluar
+        if (!container) return;
 
-      if (Object.keys(favorites).length === 0) {
-        container.innerHTML = `
-          <p style="grid-column: 1/-1; text-align: center; padding: 20px;">
-            Anda belum menambahkan resep favorit. Tambahkan sekarang!
-          </p>`;
-        return;
-      }
+        container.innerHTML = '';
 
-      Object.keys(favorites).forEach(id => {
-        const resep = favorites[id];
-        container.innerHTML += `
-          <div class="menu-card" data-resep-id="${id}">
-            <img src="image/${id}.jpg" alt="${resep.title}">
-            <div class="card-body">
-              <h5>${resep.title}</h5>
-              <p>Ditambahkan sebagai favorit Anda. 😊</p>
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-hero lihat-resep-btn" data-resep-id="${id}">
-                  Lihat Resep
-                </button>
-                <button class="btn-hero delete-fav-btn" data-resep-id="${id}">
-                  Hapus
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
+        // Jika tidak ada favorit
+        if (Object.keys(favorites).length === 0) {
+            container.innerHTML =
+                `<p style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                    Anda belum menambahkan resep favorit. Tambahkan sekarang!
+                 </p>`;
+            return;
+        }
+
+        // Generate card favorit
+        for (const id in favorites) {
+            const resep = favorites[id];
+            const cardHtml = `
+                <div class="menu-card" data-resep-id="${id}">
+                    <img src="image/${id}.jpg" alt="${resep.title}">
+                    <div class="card-body">
+                        <h5>${resep.title}</h5>
+                        <p>Ditambahkan sebagai favorit Anda. 😊</p>
+
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn-hero lihat-resep-btn" data-resep-id="${id}">
+                                Lihat Resep
+                            </button>
+
+                            <button class="btn-hero delete-fav-btn" data-resep-id="${id}">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += cardHtml;
+        }
     }
 
-    // Update warna ikon love di halaman resep
-    function updateIconVisuals() {
-      const favorites = getFavorites();
-      document.querySelectorAll(".favorite-icon").forEach(icon => {
-        const id = icon.getAttribute("data-resep-id");
-        icon.style.color = favorites[id] ? "red" : "#8e1913";
-      });
-    }
-
-    // Tambah / hapus favorit
+    // Toggle tambah / hapus favorit
     function toggleFavorite(id, isDeletion = false) {
-      const favorites = getFavorites();
-      const icon = document.querySelector(`.favorite-icon[data-resep-id="${id}"]`);
-      let shouldBeFavorite = !favorites[id];
+        const favorites = getFavorites();
+        const icon = document.querySelector(`.favorite-icon[data-resep-id="${id}"]`);
 
-      if (isDeletion) shouldBeFavorite = false;
+        let shouldBeFavorite = !favorites[id]; 
 
-      if (shouldBeFavorite) {
-        const title = icon ? icon.getAttribute("data-title") : "Tanpa Judul";
-        favorites[id] = { id, title };
-        if (icon) icon.style.color = "red";
-        alert(`"${title}" berhasil ditambahkan ke Favorit!`);
-      } else {
-        const title = favorites[id] ? favorites[id].title : "Resep";
-        delete favorites[id];
-        if (icon) icon.style.color = "#8e1913";
-        alert(`"${title}" berhasil dihapus dari Favorit.`);
-      }
+        if (isDeletion) shouldBeFavorite = false;
 
-      saveFavorites(favorites);
-      renderFavoritesDashboard();
-      updateIconVisuals();
+        if (shouldBeFavorite) {
+            const title = icon ? icon.getAttribute('data-title') || "Tanpa Judul" : "Tanpa Judul";
+            favorites[id] = { id: id, title: title };
+            if (icon) icon.style.color = 'red';
+            alert(`"${title}" berhasil ditambahkan ke Favorit!`);
+        } else {
+            const title = favorites[id] ? favorites[id].title : "Resep";
+            delete favorites[id];
+            if (icon) icon.style.color = '#8e1913';
+            alert(`"${title}" berhasil dihapus dari Favorit.`);
+        }
+
+        saveFavorites(favorites);
+        renderFavoritesDashboard();
+        updateIconVisuals();
     }
 
-    // Inisialisasi setelah DOM siap
-    document.addEventListener("DOMContentLoaded", () => {
-      // Untuk halaman yang punya icon love
-      updateIconVisuals();
+    // Update ikon love di semua halaman (index & dashboard)
+    function updateIconVisuals() {
+        const favorites = getFavorites();
+        document.querySelectorAll('.favorite-icon').forEach(icon => {
+            const id = icon.getAttribute('data-resep-id');
+            icon.style.color = favorites[id] ? 'red' : '#8e1913';
+        });
+    }
 
-      // Untuk halaman dashboard.php yang punya #favorit
-      renderFavoritesDashboard();
+    // ================= EVENT DELEGATION =================
 
-      // Delegasi event klik (love, hapus, lihat resep)
-      document.addEventListener("click", e => {
-        // Klik ikon love di section RESEP
+    // 1. Klik ikon love di card resep (index / halaman lain)
+    document.addEventListener("click", function(e) {
         if (e.target.classList.contains("favorite-icon")) {
-          const id = e.target.getAttribute("data-resep-id");
-          toggleFavorite(id);
+            const id = e.target.getAttribute("data-resep-id");
+            toggleFavorite(id);
         }
-
-        // Klik tombol "Hapus" di dashboard favorit
-        if (e.target.classList.contains("delete-fav-btn")) {
-          const id = e.target.getAttribute("data-resep-id");
-          toggleFavorite(id, true);
-        }
-
-        // Klik tombol "Lihat Resep"
-        if (e.target.classList.contains("lihat-resep-btn")) {
-          const id = e.target.getAttribute("data-resep-id");
-          if (resepLinks[id]) {
-            window.location.href = resepLinks[id];
-          } else {
-            alert("Halaman resep belum tersedia.");
-          }
-        }
-      });
     });
-  </script>
+
+    // 2. Klik tombol "Hapus" di dashboard
+    document.addEventListener("click", function(e) {
+        if (e.target.classList.contains("delete-fav-btn")) {
+            const id = e.target.getAttribute("data-resep-id");
+            toggleFavorite(id, true);
+        }
+    });
+
+    // 3. Klik tombol "Lihat Resep"
+    document.addEventListener("click", function(e) {
+        if (e.target.classList.contains("lihat-resep-btn")) {
+            const id = e.target.getAttribute("data-resep-id");
+            console.log("Lihat Resep:", id);
+
+            if (resepLinks[id]) {
+                window.location.href = resepLinks[id];
+            } else {
+                alert("Halaman resep belum tersedia.");
+            }
+        }
+    });
+
+    // ================= INISIALISASI AWAL =================
+    updateIconVisuals();       // warnai ikon love sesuai favorit
+    renderFavoritesDashboard(); // kalau ada #favorit, isi kartunya
+});
+</script>
+
 
 <!-- alert kunjungi toko -->
   <script>

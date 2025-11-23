@@ -201,7 +201,7 @@
             <i class="fa-solid fa-cookie-bite"></i>
             Daftar Akun Baru
           </div>
-          <h2>Yuk Gabung Komunitas 🧁</h2>
+          <h2>Yuk Gabung Komunitas</h2>
           <p>
             Dengan akun Ceria Bakery, kamu bisa menyimpan resep favorit, berbagi tips baking,
             dan terhubung dengan pecinta kue lainnya.

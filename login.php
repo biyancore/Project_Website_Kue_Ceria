@@ -1,3 +1,12 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$success = $_SESSION['flash_success'] ?? null;
+unset($_SESSION['flash_success']);
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -217,7 +226,7 @@
             <i class="fa-solid fa-cookie-bite"></i>
             Kembali lagi? Yuk login!
           </div>
-          <h2>Selamat Datang Kembali 🍰</h2>
+          <h2>Selamat Datang Kembali</h2>
           <p>
             Login untuk melanjutkan jelajah resep, simpan favorit, dan lihat update terbaru dari komunitas Ceria Bakery.
           </p>
@@ -245,10 +254,17 @@
           <span>Ceria Bakery</span>
         </div>
 
+
         <h3 class="auth-title">Login Akun Ceria Bakery</h3>
         <p class="auth-subtitle">
           Masukkan username atau email dan password untuk masuk.
         </p>
+
+<?php if (!empty($success)): ?>
+  <div class="alert alert-success" role="alert" style="font-size:0.85rem; padding:8px 12px; margin-bottom:15px;">
+    <?= htmlspecialchars($success); ?>
+  </div>
+<?php endif; ?>
 
         <form id="loginForm" class="auth-form" method="post" action="proses_login.php">
           <div class="mb-3 form-floating">
