@@ -151,9 +151,6 @@
         </div>
       </div>
     </div>
-        <div style="text-align:center; margin-top:20px;">
-      <a href="#" class="btn-hero">Lihat Semua Artikel</a>
-    </div>
   </div>
   </section>
 
@@ -204,9 +201,6 @@
           <i class="fa-solid fa-heart favorite-icon" data-resep-id="cheesecakepanggang" data-title="Cheese Cake Panggang" style="float:right; cursor:pointer;"></i>
         </div>
       </div>
-    </div>
-        <div style="text-align:center; margin-top:20px;">
-      <a href="#" class="btn-hero">Lihat Semua Resep</a>
     </div>
   </div>
   </section>
