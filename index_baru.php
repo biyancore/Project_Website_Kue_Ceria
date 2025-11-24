@@ -227,7 +227,7 @@
 
     <div class="community-grid" id="komunitasList">
 
-      <!-- 4 POSTINGAN STATIS -->
+      
       <article class="community-card">
         <img src="image/browniespandan.jpg" alt="Brownies Pandan @rina_bakes" class="community-img">
         <div class="community-body">
@@ -324,7 +324,7 @@
         </div>
       </article>
 
-      <!-- POSTINGAN DARI DATABASE -->
+      
       <?php if ($posts->num_rows > 0): ?>
         <?php while ($post = $posts->fetch_assoc()): ?>
           <?php
@@ -494,7 +494,7 @@
     </div>
   </section>
 
-<!-- MODAL DETAIL POSTINGAN -->
+
 
 
 
