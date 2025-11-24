@@ -16,8 +16,8 @@ $confirm  = $_POST['confirm_password'] ?? '';
 $alasan   = trim($_POST['alasan'] ?? '');
 
 
-$tanggal_lahir = '0000-00-00';      
-$jenis_kelamin = 'Belum diisi';
+// $tanggal_lahir = '0000-00-00';      
+// $jenis_kelamin = 'Belum diisi';
 
 
 if ($password !== $confirm) {

@@ -285,86 +285,130 @@ body {
   font-weight: 700;
 }
 
-/* ===== KOMUNITAS (CARD STYLE) ===== */
-
 .komunitas-section {
   max-width: 1200px;
   margin: 0 auto;
   margin-bottom: -80px;
 }
 
-/* Grid responsif 2–4 kolom seperti contoh gambar */
 .community-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
 }
 
-/* Card komunitas */
+/* CARD KECIL */
 .community-card {
-  background: #fffdf8;
+  background: #ffffff;
   border-radius: 22px;
-  padding: 10px 10px 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transition: 0.25s ease;
+  border: 1px solid #eee8aa;
 }
 
 .community-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
 }
 
-/* Gambar di atas card */
-.community-img {
+.community-card img.community-img {
   width: 100%;
-  height: 150px;
-  border-radius: 18px;
+  height: 170px;
   object-fit: cover;
-  margin-bottom: 10px;
+  border-bottom: 2px solid #f4e49f;
 }
 
-/* Isi card */
 .community-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  padding: 14px 16px;
 }
 
 .community-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0;
-  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c2841;
+  margin-bottom: 5px;
 }
 
 .community-user {
-  font-size: 0.8rem;
-  color: #8e1913;
-  margin: 0;
-}
-
-.community-caption {
-  font-size: 0.8rem;
-  color: #555;
-  margin: 4px 0 2px;
-}
-
-.community-meta {
-  font-size: 0.75rem;
-  color: #a0a0a0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: #b7414e;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 
-/* Tombol di card komunitas */
+.community-caption {
+  color: #444;
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.35;
+  height: 40px;
+  overflow: hidden;
+}
+
+.community-meta {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 14px;
+}
+
 .community-btn {
-  font-size: 0.8rem;
-  padding: 8px 14px;
   width: 100%;
+  background: linear-gradient(90deg, #8a783a, #e8d98c);
+  padding: 10px 0;
+  border-radius: 26px;
+  color: #5a3226;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.community-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(90deg, #a79050, #f5eaaa);
+}
+
+.auth-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-content {
+  background: #fff9b4;
+  border-radius: 25px;
+  padding: 30px 40px;
+  width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: pop 0.3s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  color: #8e1913;
+  cursor: pointer;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* =========================================================

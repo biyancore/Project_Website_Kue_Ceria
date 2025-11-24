@@ -213,7 +213,7 @@ if (isset($_GET['edit'])) {
 
 
 $userStmt = $koneksi->prepare("
-    SELECT nama_lengkap, username, email, tanggal_lahir, jenis_kelamin, alasan 
+    SELECT nama_lengkap, username, email, tanggal_lahir, jenis_kelamin, alasan, foto_profil
     FROM users 
     WHERE id_user = ?
     LIMIT 1
@@ -969,9 +969,7 @@ footer .social-icons a:hover {
             <div class="profile-basic-layout">
               <div class="profile-avatar-wrapper">
                 <?php
-                  $fotoProfil = !empty($user['foto_profil'])
-                    ? 'uploads/profil/' . htmlspecialchars($user['foto_profil'], ENT_QUOTES, 'UTF-8')
-                    : 'image/default-avatar.jpg';
+                  $fotoProfil = (!empty($user['foto_profil'])) ? 'uploads/profil/' . htmlspecialchars($user['foto_profil'], ENT_QUOTES, 'UTF-8') : 'image/default-avatar.jpg';
                 ?>
                 <img
                   src="<?= $fotoProfil; ?>"

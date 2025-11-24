@@ -14,6 +14,17 @@
 </head>
 
 <body>
+  <?php 
+    include 'koneksi.php';
+    $stmt = $koneksi->prepare("
+    SELECT k.*, u.username 
+    FROM komunitas k 
+    LEFT JOIN users u ON k.id_user = u.id_user
+    ORDER BY k.id_komunitas DESC
+");
+  $stmt->execute();
+  $posts = $stmt->get_result();
+  ?>
 <nav class="navbar">
   <div class="navbar-left">
     <img src="image/ceria.png" alt="Logo Ceria Bakery" class="logo">
@@ -200,6 +211,7 @@
   </div>
   </section>
 
+
 <section id="komunitas"
   style="
     position: relative;
@@ -220,6 +232,8 @@
     </p>
 
     <div class="community-grid" id="komunitasList">
+
+      <!-- 4 POSTINGAN STATIS -->
       <article class="community-card">
         <img src="image/browniespandan.jpg" alt="Brownies Pandan @rina_bakes" class="community-img">
         <div class="community-body">
@@ -230,10 +244,17 @@
           </p>
           <div class="community-meta">
             <span>❤️ 120 suka</span>
-            <span>•</span>
-            <span>2 jam lalu</span>
           </div>
-          <button class="btn-hero community-btn">Lihat Postingan</button>
+          <button
+            type="button"
+            class="btn-hero community-btn lihat-post-btn"
+            data-gambar="image/browniespandan.jpg"
+            data-judul="Brownies Pandan Super Moist"
+            data-user="@rina_bakes • Brownies"
+            data-isi="Cobain resep brownies pandan ini, teksturnya lembut dan super moist! 😍"
+          >
+            Lihat Postingan
+          </button>
         </div>
       </article>
 
@@ -247,10 +268,17 @@
           </p>
           <div class="community-meta">
             <span>❤️ 89 suka</span>
-            <span>•</span>
-            <span>kemarin</span>
           </div>
-          <button class="btn-hero community-btn">Lihat Postingan</button>
+          <button
+            type="button"
+            class="btn-hero community-btn lihat-post-btn"
+            data-gambar="image/tart.jpeg"
+            data-judul="Tart Pastel Ulang Tahun"
+            data-user="@cindy_cake • Cake Tart"
+            data-isi="Tart buttercream warna pastel untuk ulang tahun adikku 🎂💗"
+          >
+            Lihat Postingan
+          </button>
         </div>
       </article>
 
@@ -264,10 +292,17 @@
           </p>
           <div class="community-meta">
             <span>❤️ 53 suka</span>
-            <span>•</span>
-            <span>3 hari lalu</span>
           </div>
-          <button class="btn-hero community-btn">Lihat Postingan</button>
+          <button
+            type="button"
+            class="btn-hero community-btn lihat-post-btn"
+            data-gambar="image/reseplembut.jpg"
+            data-judul="Roti Susu Super Lembut"
+            data-user="@andi_kitchen • Roti"
+            data-isi="Sharing tips biar roti lembut tapi nggak bantet, cocok buat sarapan. 🥐"
+          >
+            Lihat Postingan
+          </button>
         </div>
       </article>
 
@@ -281,38 +316,103 @@
           </p>
           <div class="community-meta">
             <span>❤️ 34 suka</span>
-            <span>•</span>
-            <span>1 minggu lalu</span>
           </div>
-          <button class="btn-hero community-btn">Lihat Postingan</button>
+          <button
+            type="button"
+            class="btn-hero community-btn lihat-post-btn"
+            data-gambar="image/cupcake.jpeg"
+            data-judul="Cupcake Vanilla Pastel"
+            data-user="@sweetcup • Cupcake"
+            data-isi="Set cupcake pastel untuk gift box temen kantor, simple tapi cantik 💕"
+          >
+            Lihat Postingan
+          </button>
         </div>
       </article>
 
-      <?php foreach ($posts as $post): ?>
-        <article class="community-card">
-          <img src="<?= htmlspecialchars($post['gambar']) ?>" alt="<?= htmlspecialchars($post['judul']) ?>" class="community-img">
-          <div class="community-body">
-            <h5 class="community-title"><?= htmlspecialchars($post['judul']) ?></h5>
-            <p class="community-user">@<?= htmlspecialchars($post['username']) ?> • <?= htmlspecialchars($post['kategori']) ?></p>
-            <p class="community-caption"><?= htmlspecialchars($post['caption']) ?></p>
-            <div class="community-meta">
-              <span>❤️ <?= (int)$post['likes'] ?> suka</span>
-              <span>•</span>
-              <span><?= htmlspecialchars($post['waktu_relative']) ?></span>
+      <!-- POSTINGAN DARI DATABASE -->
+      <?php if ($posts->num_rows > 0): ?>
+        <?php while ($post = $posts->fetch_assoc()): ?>
+          <?php
+            $foto = !empty($post['gambar'])
+              ? 'uploads/' . htmlspecialchars($post['gambar'], ENT_QUOTES)
+              : 'image/reseplembut.jpg';
+          ?>
+          <article class="community-card">
+            <img src="<?= $foto ?>" class="community-img">
+            <div class="community-body">
+              <h5 class="community-title"><?= htmlspecialchars($post['judul']) ?></h5>
+
+              <p class="community-user">
+                @<?= htmlspecialchars($post['username'] ?? 'member') ?> • Komunitas
+              </p>
+
+              <p class="community-caption">
+                <?= nl2br(htmlspecialchars($post['isi'])) ?>
+              </p>
+
+              <div class="community-meta">
+                <span>❤️ suka</span>
+              </div>
+
+              <button
+                type="button"
+                class="btn-hero community-btn lihat-post-btn"
+                data-gambar="<?= $foto ?>"
+                data-judul="<?= htmlspecialchars($post['judul']) ?>"
+                data-user="@<?= htmlspecialchars($post['username'] ?? 'member') ?> • Komunitas"
+                data-isi="<?= nl2br(htmlspecialchars($post['isi'])) ?>"
+              >
+                Lihat Postingan
+              </button>
             </div>
-            <button class="btn-hero community-btn">Lihat Postingan</button>
-          </div>
-        </article>
-      <?php endforeach; ?>
-      -->
+          </article>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <p style="grid-column:1/-1; text-align:center; padding:20px;">
+          Belum ada postingan dari member. Yuk jadi yang pertama! ✨
+        </p>
+      <?php endif; ?>
+
     </div>
 
     <div style="text-align:center; margin-top:25px;">
-      <a href="dashboard.php" class="btn-hero" style="max-width:260px; text-size:16px;">Lihat Postingan Saya</a>
+      <a href="dashboard.php" class="btn-hero" style="max-width:260px;">Lihat Postingan Saya</a>
     </div>
+
   </div>
 </section>
 
+<div id="viewPostModal" class="auth-modal">
+  <div class="auth-content" style="max-width:460px; padding:22px 22px 26px;">
+    <span class="close-btn close-view-post">&times;</span>
+
+    <article class="community-card" style="margin-bottom:0;">
+      <img id="viewPostImage"
+           src=""
+           alt="Detail Postingan"
+           class="community-img"
+           style="width:100%; height:200px; object-fit:cover;">
+
+      <div class="community-body">
+        <h5 id="viewPostTitle" class="community-title"></h5>
+
+        <p id="viewPostUser" class="community-user"></p>
+
+        <p id="viewPostIsi"
+           class="community-caption"
+           style="height:auto; max-height:none; margin-bottom:10px;">
+        </p>
+
+        <div class="community-meta">
+          <span>❤️ 0 suka</span>
+          <span>•</span>
+          <span>baru saja</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
 
 
   <section id="toko"
@@ -399,6 +499,8 @@
       </div>
     </div>
   </section>
+
+<!-- MODAL DETAIL POSTINGAN -->
 
 
 
@@ -621,9 +723,82 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const viewModal = document.getElementById("viewPostModal");
+  const imgEl     = document.getElementById("viewPostImage");
+  const titleEl   = document.getElementById("viewPostTitle");
+  const userEl    = document.getElementById("viewPostUser");
+  const isiEl     = document.getElementById("viewPostIsi");
+  const closeEls  = document.querySelectorAll(".close-view-post");
+
+  // Buka modal saat tombol "Lihat Postingan" diklik
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".lihat-post-btn");
+    if (!btn) return;
+
+    const gambar = btn.getAttribute("data-gambar") || "";
+    const judul  = btn.getAttribute("data-judul") || "";
+    const user   = btn.getAttribute("data-user") || "";
+    const isi    = btn.getAttribute("data-isi") || "";
+
+    if (imgEl)   imgEl.src = gambar;
+    if (titleEl) titleEl.textContent = judul;
+    if (userEl)  userEl.textContent  = user;
+    if (isiEl)   isiEl.innerHTML     = isi;
+
+    if (viewModal) viewModal.style.display = "flex";
+  });
+
+  // Tutup modal saat klik icon X
+  closeEls.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (viewModal) viewModal.style.display = "none";
+    });
+  });
+
+  // Tutup modal saat klik di luar konten modal
+  window.addEventListener("click", function (e) {
+    if (e.target === viewModal) {
+      viewModal.style.display = "none";
+    }
+  });
+});
+</script>
+
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const editBtn = document.getElementById("editProfilBtn");
+  const editForm = document.getElementById("editProfilForm");
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tabBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      tabContents.forEach(c => c.classList.remove("active"));
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  if (editBtn && editForm) {
+    editBtn.addEventListener("click", () => {
+      const formVisible = editForm.style.display === "flex";
+      editForm.style.display = formVisible ? "none" : "flex";
+    });
+  }
+});
+
+  </script>
+
+  
 
 
-  <script>
+
+
+
+<script>
 document.addEventListener("click", function(e) {
   if (e.target.classList.contains("btn-toko")) {
 
